@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Future: {{.CurrentPath}}</title>
+    <link rel="stylesheet" href="/web/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image" href="/web/favicon.ico">
+</head>
+<body>
+<header>
+    <h1>Future</h1>
+    <div class="breadcrumb">{{.Path}}</div>
+</header>
+<main>
+    <section class="folders">
+        <h2>Folders</h2>
+        <div class="grid">
+            {{if ne .Path "/"}}
+            <div class="item folder">
+                <a href="..">
+                    <div class="icon-name">
+                        <i class="fas fa-folder"></i>
+                        <span>..</span>
+                    </div>
+                </a>
+            </div>
+            {{end}}
+            {{range .Files}}
+            {{if .IsDir}}
+            <div class="item folder">
+                <a href="{{.Name}}/">
+                    <div class="icon-name">
+                        <i class="fas fa-folder"></i>
+                        <span title="{{.Name}}">{{truncate .Name 20}}</span>
+                    </div>
+                </a>
+            </div>
+            {{end}}
+            {{end}}
+        </div>
+    </section>
+    <section class="files">
+        <h2>Files</h2>
+        <div class="grid">
+            {{range .Files}}
+            {{if not .IsDir}}
+            <div class="item file">
+                <a href="{{.Name}}" class="file-link" data-filename="{{.Name}}">
+                    <div class="icon-name">
+                        {{if isImage .Name}}
+                        <img src="{{.Name}}" alt="{{.Name}}" class="thumbnail">
+                        {{else}}
+                        <i class="{{getFileIcon .Name}}"></i>
+                        {{end}}
+                        <span title="{{.Name}}">{{truncate .Name 20}}</span>
+                    </div>
+                </a>
+            </div>
+            {{end}}
+            {{end}}
+        </div>
+    </section>
+</main>
+<div id="preview" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="viewer-content"></div>
+    </div>
+</div>
+<script src="/web/js/main.js"></script>
+</body>
+</html>
