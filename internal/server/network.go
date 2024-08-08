@@ -1,7 +1,8 @@
-package main
+package server
 
 import (
 	"fmt"
+	"github.com/rxxuzi/future/internal/static"
 	"log"
 	"net"
 	"net/http"
@@ -33,7 +34,7 @@ func GetLocalIP() string {
 
 // CreateServer creates an HTTP server with the specified configuration
 func CreateServer(config *ServerConfig) (*http.Server, error) {
-	staticFS := GetStaticFS()
+	staticFS := static.GetStaticFS()
 
 	mux := http.NewServeMux()
 

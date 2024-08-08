@@ -14,6 +14,9 @@ import (
 	"runtime"
 	"syscall"
 	"time"
+
+	"github.com/rxxuzi/future/internal/global"
+	"github.com/rxxuzi/future/internal/server"
 )
 
 func openBrowser(url string) {
@@ -46,23 +49,23 @@ func main() {
 	)
 
 	flag.BoolVar(&genFlag, "gen", false, "Generate default configuration file")
-	flag.IntVar(&port, "port", 0, "Port to run the server on")
+	flag.IntVar(&port, "port", 0, "Port to run the svr on")
 	flag.StringVar(&root, "root", "", "Root directory to serve")
 	flag.BoolVar(&logFlag, "log", false, "Enable request logging")
-	flag.BoolVar(&openFlag, "open", false, "Open browser after starting the server")
+	flag.BoolVar(&openFlag, "open", false, "Open browser after starting the svr")
 
 	flag.Usage = func() {
 		fmt.Println("Usage of future:")
 		fmt.Println("  -gen")
 		fmt.Println("        Generate default configuration file")
 		fmt.Println("  -port <int>")
-		fmt.Println("        Port to run the server on (overrides config file)")
+		fmt.Println("        Port to run the svr on (overrides config file)")
 		fmt.Println("  -root <string>")
 		fmt.Println("        Root directory to serve (overrides config file)")
 		fmt.Println("  -log")
 		fmt.Println("        Enable request logging (overrides config file)")
 		fmt.Println("  -open")
-		fmt.Println("        Open browser after starting the server")
+		fmt.Println("        Open browser after starting the svr")
 		fmt.Println("\nExample:")
 		fmt.Println("  future -port 8080 -root public/ -log -open")
 		fmt.Println("  future -gen")
@@ -73,7 +76,7 @@ func main() {
 
 	// -genオプションが指定された場合
 	if genFlag {
-		err := GenerateDefaultConfig()
+		err := global.GenerateDefaultConfig()
 		if err != nil {
 			log.Fatalf("Failed to generate default configuration: %v", err)
 		}
@@ -82,7 +85,7 @@ func main() {
 	}
 
 	// 設定ファイルの読み込み
-	config, err := LoadConfig()
+	config, err := global.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
@@ -108,28 +111,28 @@ func main() {
 	}
 
 	// サーバーの設定
-	serverConfig := &ServerConfig{
+	serverConfig := &server.ServerConfig{
 		Port:    config.Port,
 		RootDir: config.Root,
 		LogFlag: config.Log,
 	}
 
 	// サーバーの作成
-	server, err := CreateServer(serverConfig)
+	svr, err := server.CreateServer(serverConfig)
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)
 	}
 
 	// アクセス情報の表示
-	PrintAccessInfo(serverConfig)
+	server.PrintAccessInfo(serverConfig)
 
 	// サーバーの起動
 	go func() {
-		log.Printf("Starting server on port %d, serving directory: %s\n", config.Port, config.Root)
+		log.Printf("Starting svr on port %d, serving directory: %s\n", config.Port, config.Root)
 		if config.Log {
 			log.Println("Request logging is enabled")
 		}
-		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := svr.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Server error: %v", err)
 		}
 	}()
@@ -151,11 +154,11 @@ func main() {
 	<-sigChan
 
 	// シャットダウン処理
-	log.Println("Shutting down server...")
+	log.Println("Shutting down svr...")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := server.Shutdown(ctx); err != nil {
-		log.Printf("Error during server shutdown: %v", err)
+	if err := svr.Shutdown(ctx); err != nil {
+		log.Printf("Error during svr shutdown: %v", err)
 	}
 
 	log.Println("Server shutdown complete")

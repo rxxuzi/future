@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"bufio"
@@ -35,29 +35,79 @@ type DirectoryContent struct {
 	CurrentPath string
 }
 
-func getFileIcon(filename string) string {
+func GetFileIcon(filename string, fileType string) string {
 	ext := strings.ToLower(filepath.Ext(filename))
-	switch ext {
-	case ".pdf":
-		return "fas fa-file-pdf"
-	case ".doc", ".docx":
-		return "fas fa-file-word"
-	case ".xls", ".xlsx":
-		return "fas fa-file-excel"
-	case ".ppt", ".pptx":
-		return "fas fa-file-powerpoint"
-	case ".jpg", ".jpeg", ".png", ".gif":
-		return "fas fa-file-image"
-	case ".mp3", ".wav":
+
+	switch fileType {
+	case "archive":
+		return "fas fa-file-archive"
+	case "audio":
 		return "fas fa-file-audio"
-	case ".mp4", ".avi", ".mov":
+	case "code":
+		switch ext {
+		case ".html", ".htm":
+			return "fab fa-html5"
+		case ".css":
+			return "fab fa-css3-alt"
+		case ".js":
+			return "fab fa-js"
+		case ".py":
+			return "fab fa-python"
+		case ".java":
+			return "fab fa-java"
+		case ".php":
+			return "fab fa-php"
+		case ".rb":
+			return "fas fa-gem"
+		case ".go":
+			return "fas fa-golang"
+		default:
+			return "fas fa-file-code"
+		}
+	case "document":
+		switch ext {
+		case ".doc", ".docx":
+			return "fas fa-file-word"
+		case ".xls", ".xlsx":
+			return "fas fa-file-excel"
+		case ".ppt", ".pptx":
+			return "fas fa-file-powerpoint"
+		case ".pdf":
+			return "fas fa-file-pdf"
+		default:
+			return "fas fa-file-alt"
+		}
+	case "image":
+		return "fas fa-file-image"
+	case "pdf":
+		return "fas fa-file-pdf"
+	case "text":
+		switch ext {
+		case ".txt":
+			return "fas fa-file-alt"
+		case ".md", ".markdown":
+			return "fab fa-markdown"
+		case ".json":
+			return "fas fa-brackets-curly"
+		case ".xml":
+			return "fas fa-code"
+		case ".csv":
+			return "fas fa-file-csv"
+		default:
+			return "fas fa-file-alt"
+		}
+	case "video":
 		return "fas fa-file-video"
+	case "executable":
+		return "fas fa-cog"
+	case "binary":
+		return "fas fa-file"
 	default:
 		return "fas fa-file"
 	}
 }
 
-func getFileType(filename string, root string) string {
+func GetFileType(filename string, root string) string {
 	ext := strings.ToLower(filepath.Ext(filename))
 	switch ext {
 	case ".zip", ".rar", ".7z", ".tar", ".gz":
@@ -166,7 +216,7 @@ func CustomFileServer(root string, staticFS fs.FS) http.HandlerFunc {
 			info, _ := file.Info()
 			fileType := "folder"
 			if !file.IsDir() {
-				fileType = getFileType(file.Name(), path)
+				fileType = GetFileType(file.Name(), path)
 			}
 			fileInfos = append(fileInfos, FileInfo{
 				Name:    file.Name(),
@@ -192,12 +242,24 @@ func CustomFileServer(root string, staticFS fs.FS) http.HandlerFunc {
 		}
 
 		tmpl, err := template.New("listing").Funcs(template.FuncMap{
-			"getFileIcon": getFileIcon,
-			"formatSize":  formatSize,
-			"formatTime":  formatTime,
-			"isImage":     isImage,
-			"truncate":    truncate,
+			"formatSize": formatSize,
+			"formatTime": formatTime,
+			"isImage":    isImage,
+			"truncate":   truncate,
+			"getFileIcon": func(name string) string { // ここを "getFileIcon" に変更
+				for _, file := range fileInfos {
+					if file.Name == name {
+						return GetFileIcon(name, file.Type)
+					}
+				}
+				return "fas fa-file"
+			},
 		}).Parse(string(tmplContent))
+
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse template: %v", err), http.StatusInternalServerError)
+			return
+		}
 
 		data := DirectoryContent{
 			Path:        r.URL.Path,

@@ -1,8 +1,10 @@
 # Future
 
 ![License](https://img.shields.io/github/license/rxxuzi/future)
+![GitHub Release](https://img.shields.io/github/v/release/rxxuzi/future)
+![GitHub Tag](https://img.shields.io/github/v/tag/rxxuzi/future)
 
-Future is a lightweight, powerful file server written in Go, featuring a sleek, modern UI inspired by Google Drive.
+Future is a lightweight, powerful file server written in Go, featuring a sleek, modern UI.
 It provides an intuitive and visually appealing way to browse and manage your files and directories.
 
 ## Features
@@ -55,10 +57,6 @@ Future can be configured using a JSON file named `future.json`. To generate a de
 ```
 
 Edit the generated `future.json` file to customize your settings.
-
-## Contributing
-
-We welcome contributions! Please feel free to submit a Pull Request.
 
 ## License
 
