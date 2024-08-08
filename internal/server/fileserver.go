@@ -44,26 +44,7 @@ func GetFileIcon(filename string, fileType string) string {
 	case "audio":
 		return "fas fa-file-audio"
 	case "code":
-		switch ext {
-		case ".html", ".htm":
-			return "fab fa-html5"
-		case ".css":
-			return "fab fa-css3-alt"
-		case ".js":
-			return "fab fa-js"
-		case ".py":
-			return "fab fa-python"
-		case ".java":
-			return "fab fa-java"
-		case ".php":
-			return "fab fa-php"
-		case ".rb":
-			return "fas fa-gem"
-		case ".go":
-			return "fas fa-golang"
-		default:
-			return "fas fa-file-code"
-		}
+		return "fas fa-file-code"
 	case "document":
 		switch ext {
 		case ".doc", ".docx":

@@ -16,6 +16,7 @@
     <h1>Future</h1>
     <div class="breadcrumb">{{.Path}}</div>
 </header>
+
 <main>
     <section class="folders">
         <h2>Folders</h2>
@@ -70,10 +71,19 @@
 
 <div id="preview" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <div class="preview-header">
+            <div class="filename"></div>
+            <div class="preview-controls">
+                <button class="preview-button info-button"><img src="/web/assets/pv-info.svg" alt="Info"></button>
+                <button class="preview-button download-button"><img src="/web/assets/pv-download.svg" alt="Download"></button>
+                <button class="preview-button close-button"><img src="/web/assets/pv-close.svg" alt="Close"></button>
+            </div>
+        </div>
         <div id="viewer-content"></div>
     </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
 <script src="/web/js/main.js"></script>
 </body>
 </html>

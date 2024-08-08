@@ -2,65 +2,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileLinks = document.querySelectorAll('.file-link');
     const preview = document.getElementById('preview');
     const viewerContent = document.getElementById('viewer-content');
-    const closeBtn = document.querySelector('.close');
+    const closeBtn = document.querySelector('.close-button');
+    const downloadBtn = document.querySelector('.download-button');
+    const infoBtn = document.querySelector('.info-button');
+    const filename = document.querySelector('.filename');
 
     fileLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const filename = link.getAttribute('data-filename');
-            if (!filename) {
+            const file = link.getAttribute('data-filename');
+            if (!file) {
                 console.error('Filename is missing');
                 return;
             }
-            const fileExtension = filename.split('.').pop().toLowerCase();
-            const fileType = link.closest('.item').classList[2]; // Get the file type class
+            const fileExtension = file.split('.').pop().toLowerCase();
+            const fileType = link.closest('.item').classList[2];
+
+            filename.textContent = file;
 
             switch (fileType) {
                 case 'image':
-                    viewerContent.innerHTML = `<img src="${link.href}" alt="${filename}" style="max-width: 100%; max-height: 80vh;">`;
+                    viewerContent.innerHTML = `<img src="${link.href}" alt="${file}">`;
                     break;
                 case 'audio':
                     viewerContent.innerHTML = `<audio controls src="${link.href}">Your browser does not support the audio element.</audio>`;
                     break;
                 case 'video':
-                    viewerContent.innerHTML = `<video controls style="max-width: 100%; max-height: 80vh;"><source src="${link.href}" type="video/${fileExtension}">Your browser does not support the video tag.</video>`;
+                    viewerContent.innerHTML = `<video controls><source src="${link.href}" type="video/${fileExtension}">Your browser does not support the video tag.</video>`;
                     break;
                 case 'pdf':
-                    viewerContent.innerHTML = `<iframe src="${link.href}" style="width: 100%; height: 80vh;"></iframe>`;
+                    viewerContent.innerHTML = `<iframe src="${link.href}" style="width: 100%; height: 100%;"></iframe>`;
                     break;
                 case 'text':
                 case 'code':
                     fetch(link.href)
                         .then(response => response.text())
                         .then(text => {
-                            viewerContent.innerHTML = `<pre style="white-space: pre-wrap; word-wrap: break-word; max-height: 80vh; overflow-y: auto;"><code class="language-${fileExtension}">${escapeHtml(text)}</code></pre>`;
+                            viewerContent.innerHTML = `<pre><code class="language-${fileExtension}">${escapeHtml(text)}</code></pre>`;
                             highlightCode();
                         });
                     break;
-                case 'archive':
-                case 'document':
-                    viewerContent.innerHTML = `
-                        <div style="text-align: center; padding: 20px;">
-                            <img src="/web/assets/${fileType}-icon.svg" alt="${fileType} icon" style="width: 64px; height: 64px;">
-                            <p>Preview not available for ${fileType} files.</p>
-                            <a href="${link.href}" download="${filename}" class="download-btn">Download</a>
-                        </div>
-                    `;
-                    break;
-                case 'binary':
-                    viewerContent.innerHTML = `
-                        <div style="text-align: center; padding: 20px;">
-                            <img src="/web/assets/pv-binary.svg" alt="Binary file icon" style="width: 256px; height: 256px;">
-                            <p>Preview not available for binary files.</p>
-                            <a href="${link.href}" download="${filename}" class="download-btn">Download</a>
-                        </div>
-                    `;
-                    break;
                 default:
                     viewerContent.innerHTML = `
-                        <div style="text-align: center; padding: 20px;">
+                        <div style="text-align: center; padding: 20px; background-color: white; border-radius: 8px;">
+                            <img src="/web/assets/pv-binary.svg" alt="File icon" id="binary-img">
                             <p>Preview not available for this file type.</p>
-                            <a href="${link.href}" download="${filename}" class="download-btn">Download</a>
                         </div>
                     `;
             }
@@ -69,15 +55,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    closeBtn.addEventListener('click', () => {
-        preview.style.display = 'none';
+    closeBtn.addEventListener('click', closePreview);
+
+    downloadBtn.addEventListener('click', () => {
+        const file = filename.textContent;
+        const link = document.createElement('a');
+        link.href = file;
+        link.download = file;
+        link.click();
     });
 
-    window.addEventListener('click', (e) => {
-        if (e.target === preview) {
-            preview.style.display = 'none';
+    infoBtn.addEventListener('click', () => {
+        // Implement file info display logic here
+        console.log(`Showing info for ${filename.textContent}`);
+    });
+
+    viewerContent.addEventListener('click', (e) => {
+        if (e.target === viewerContent) {
+            closePreview();
         }
     });
+
+    function closePreview() {
+        preview.style.display = 'none';
+        viewerContent.innerHTML = '';
+    }
 
     function escapeHtml(unsafe) {
         return unsafe
