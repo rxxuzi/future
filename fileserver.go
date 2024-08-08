@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"net/http"
 	"os"
@@ -18,6 +21,7 @@ type FileInfo struct {
 	Mode    os.FileMode
 	ModTime time.Time
 	IsDir   bool
+	Type    string
 }
 
 func isImage(filename string) bool {
@@ -51,6 +55,64 @@ func getFileIcon(filename string) string {
 	default:
 		return "fas fa-file"
 	}
+}
+
+func getFileType(filename string, root string) string {
+	ext := strings.ToLower(filepath.Ext(filename))
+	switch ext {
+	case ".zip", ".rar", ".7z", ".tar", ".gz":
+		return "archive"
+	case ".mp3", ".wav", ".ogg", ".flac":
+		return "audio"
+	case ".html", ".css", ".js", ".py", ".go", ".java", ".cpp", ".c", ".h", ".md", ".markdown", ".scala", ".php":
+		return "code"
+	case ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx":
+		return "document"
+	case ".exe", ".app", ".out", ".run", ".bin":
+		return "executable"
+	case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".webp":
+		return "image"
+	case ".pdf":
+		return "pdf"
+	case ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm":
+		return "video"
+	default:
+		fullPath := filepath.Join(root, filename)
+		if isTextFile(fullPath) {
+			return "text"
+		}
+		return "binary"
+	}
+}
+
+func isTextFile(filePath string) bool {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return false
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+
+		}
+	}(file)
+
+	// ファイルの先頭1024バイトを読み込む
+	buffer := make([]byte, 1024)
+	n, err := file.Read(buffer)
+	if err != nil && err != io.EOF {
+		return false
+	}
+
+	// NULL バイトがあればバイナリファイルとみなす
+	if bytes.IndexByte(buffer[:n], 0) != -1 {
+		return false
+	}
+
+	// UTF-8でデコード可能かチェック
+	reader := bufio.NewReader(bytes.NewReader(buffer[:n]))
+	_, err = reader.ReadString('\n')
+	return err == nil || err == io.EOF
 }
 
 func formatSize(size int64) string {
@@ -102,12 +164,17 @@ func CustomFileServer(root string, staticFS fs.FS) http.HandlerFunc {
 		var fileInfos []FileInfo
 		for _, file := range files {
 			info, _ := file.Info()
+			fileType := "folder"
+			if !file.IsDir() {
+				fileType = getFileType(file.Name(), path)
+			}
 			fileInfos = append(fileInfos, FileInfo{
 				Name:    file.Name(),
 				Size:    info.Size(),
 				Mode:    info.Mode(),
 				ModTime: info.ModTime(),
 				IsDir:   file.IsDir(),
+				Type:    fileType,
 			})
 		}
 

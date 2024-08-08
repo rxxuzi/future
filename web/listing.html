@@ -41,18 +41,19 @@
             {{end}}
         </div>
     </section>
+
     <section class="files">
         <h2>Files</h2>
         <div class="grid">
             {{range .Files}}
             {{if not .IsDir}}
-            <div class="item file">
+            <div class="item file {{.Type}}">
                 <a href="{{.Name}}" class="file-link" data-filename="{{.Name}}">
                     <div class="icon-name">
                         {{if isImage .Name}}
                         <img src="{{.Name}}" alt="{{.Name}}" class="thumbnail">
                         {{else}}
-                        <i class="{{getFileIcon .Name}}"></i>
+                        <i class="fas {{getFileIcon .Name}}"></i>
                         {{end}}
                         <span title="{{.Name}}">{{truncate .Name 20}}</span>
                     </div>
@@ -63,6 +64,7 @@
         </div>
     </section>
 </main>
+
 <div id="preview" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
