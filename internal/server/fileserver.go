@@ -146,6 +146,11 @@ func isTextFile(filePath string) bool {
 	return err == nil || err == io.EOF
 }
 
+func isVideo(filename string) bool {
+	ext := strings.ToLower(filepath.Ext(filename))
+	return ext == ".mp4" || ext == ".webm" || ext == ".ogg" || ext == ".mov"
+}
+
 func formatSize(size int64) string {
 	const unit = 1024
 	if size < unit {
@@ -226,8 +231,9 @@ func CustomFileServer(root string, staticFS fs.FS) http.HandlerFunc {
 			"formatSize": formatSize,
 			"formatTime": formatTime,
 			"isImage":    isImage,
+			"isVideo":    isVideo,
 			"truncate":   truncate,
-			"getFileIcon": func(name string) string { // ここを "getFileIcon" に変更
+			"getFileIcon": func(name string) string {
 				for _, file := range fileInfos {
 					if file.Name == name {
 						return GetFileIcon(name, file.Type)
