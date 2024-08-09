@@ -52,7 +52,7 @@
             {{range .Files}}
             {{if not .IsDir}}
             <div class="item file {{.Type}}">
-                <a href="{{.Name}}" class="file-link" data-filename="{{.Name}}">
+                <a href="{{.Name}}" class="file-link" data-filename="{{.Name}}" data-size="{{formatSize .Size}}" data-modified="{{formatTime .ModTime}}">
                     <div class="icon-name">
                         {{if isImage .Name}}
                         <img src="{{.Name}}" alt="{{.Name}}" class="thumbnail">
@@ -82,6 +82,13 @@
             </div>
         </div>
         <div id="viewer-content"></div>
+        <div id="file-info" class="file-info hidden">
+            <h3>File Information</h3>
+            <p><strong>Path:</strong> <span id="file-path"></span></p>
+            <p><strong>Last Modified:</strong> <span id="file-modified"></span></p>
+            <p><strong>Size:</strong> <span id="file-size"></span></p>
+            <p><strong>Type:</strong> <span id="file-type"></span></p>
+        </div>
     </div>
 </div>
 

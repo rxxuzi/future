@@ -6,6 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.querySelector('.download-button');
     const infoBtn = document.querySelector('.info-button');
     const filename = document.querySelector('.filename');
+    const fileInfo = document.getElementById('file-info');
+    const filePath = document.getElementById('file-path');
+    const fileModified = document.getElementById('file-modified');
+    const fileSize = document.getElementById('file-size');
+    const fileType = document.getElementById('file-type');
+
+    let currentFile = null;
+
 
     fileLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -15,6 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Filename is missing');
                 return;
             }
+            currentFile = {
+                name: file,
+                path: link.href,
+                type: link.closest('.item').classList[2],
+                size: link.getAttribute('data-size'),
+                modified: link.getAttribute('data-modified')
+            };
+
             const fileExtension = file.split('.').pop().toLowerCase();
             const fileType = link.closest('.item').classList[2];
 
@@ -52,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             preview.style.display = 'block';
+            fileInfo.classList.add('hidden');
         });
     });
 
@@ -66,8 +83,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     infoBtn.addEventListener('click', () => {
-        // Implement file info display logic here
-        console.log(`Showing info for ${filename.textContent}`);
+        if (currentFile) {
+            filePath.textContent = currentFile.path;
+            fileModified.textContent = currentFile.modified;
+            fileSize.textContent = currentFile.size;
+            fileType.textContent = currentFile.type;
+            fileInfo.classList.toggle('hidden');
+        }
+    });
+
+    closeBtn.addEventListener('click', closePreview);
+    downloadBtn.addEventListener('click', () => {
+        if (currentFile) {
+            const link = document.createElement('a');
+            link.href = currentFile.path;
+            link.download = currentFile.name;
+            link.click();
+        }
     });
 
     viewerContent.addEventListener('click', (e) => {
@@ -79,6 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function closePreview() {
         preview.style.display = 'none';
         viewerContent.innerHTML = '';
+        fileInfo.classList.add('hidden');
+        currentFile = null;
     }
 
     function escapeHtml(unsafe) {

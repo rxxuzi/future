@@ -107,3 +107,25 @@
     width: 30%;
     height: 30%;
 }
+
+.file-info {
+    background-color: var(--primary-color);
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+    font-size: 14px;
+}
+
+.file-info h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: var(--accent-color);
+}
+
+.file-info p {
+    margin: 5px 0;
+}
+
+.hidden {
+    display: none;
+}
