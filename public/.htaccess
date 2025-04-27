@@ -1,0 +1,54 @@
+# .htaccess for future
+
+ErrorDocument 400 /errors/400.html
+ErrorDocument 401 /errors/401.html
+ErrorDocument 403 /errors/403.html
+ErrorDocument 404 /errors/404.html
+ErrorDocument 500 /errors/500.html
+
+<IfModule mod_headers.c>
+  Header set X-XSS-Protection "1; mode=block"
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data:; font-src 'self' data: https://cdnjs.cloudflare.com;"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    RewriteCond %{THE_REQUEST} \s/index\.php[\s?] [NC]
+    RewriteRule ^index\.php$ / [R=301,L,NE]
+
+    RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+    RewriteCond %{REQUEST_URI} !^/errors/
+    RewriteRule ^ %1 [R=301,L,NE]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+    RewriteRule ^([a-zA-Z0-9_-]+)$ $1.php [L]
+</IfModule>
+
+# PHPのエラー表示設定
+php_flag display_errors Off
+php_flag log_errors On
+
+# セキュリティ設定
+# ディレクトリ一覧表示を無効化
+Options -Indexes
+
+# ファイルアクセス制限
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(json|lock|sql|env|gitignore|example)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+</IfModule>

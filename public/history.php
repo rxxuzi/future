@@ -163,6 +163,8 @@ include_once 'includes/header.php';
         </div>
     </div>
 </div>
+
+<script src="js/api.js"></script>
 <script src="js/app.js"></script>
 <script src="js/history.js"></script>
 

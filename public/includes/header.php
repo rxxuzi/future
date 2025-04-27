@@ -65,7 +65,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
             <nav class="main-nav">
                 <ul>
                     <li class="<?php echo $current_page === 'index' ? 'active' : ''; ?>">
-                        <a href="index.php"><i class="fas fa-home"></i> ホーム</a>
+                        <a href="/"><i class="fas fa-home"></i> ホーム</a>
                     </li>
                     <li>
                         <a href="#" id="show-transaction-modal"><i class="fas fa-plus-circle"></i> 新規追加</a>
@@ -77,7 +77,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                         <a href="analytics.php"><i class="fas fa-chart-pie"></i> 分析</a>
                     </li>
                     <li class="<?php echo $current_page === 'investments' ? 'active' : ''; ?>">
-                        <a href="investments.php"><i class="fas fa-chart-line"></i> 投資</a>
+                        <a href="invest.php"><i class="fas fa-chart-line"></i> 投資</a>
                     </li>
                     <li class="<?php echo $current_page === 'settings' ? 'active' : ''; ?>">
                         <a href="settings.php"><i class="fas fa-cog"></i> 設定</a>

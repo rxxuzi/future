@@ -6,7 +6,7 @@ include_once 'includes/header.php';
         <h2>ダッシュボード</h2>
         <div class="date-filter">
             <button id="date-prev"><i class="fas fa-chevron-left"></i></button>
-            <span id="current-date-range">2025年4月</span>
+            <span id="current-date-range"></span>
             <button id="date-next"><i class="fas fa-chevron-right"></i></button>
         </div>
     </header>
@@ -14,9 +14,6 @@ include_once 'includes/header.php';
     <div class="dashboard">
         <!-- 残高サマリー -->
         <div class="card balance-summary">
-            <div class="card-header">
-                <h3>今月の残高</h3>
-            </div>
             <div class="card-body">
                 <div class="balance-amount" id="current-balance">¥0</div>
                 <div class="balance-stats">
@@ -117,6 +114,7 @@ include_once 'includes/header.php';
         </div>
     </div>
 
+    <script src="js/api.js"></script>
     <script src="js/app.js"></script>
     <script src="js/index.js"></script>
 

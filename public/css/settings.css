@@ -10,7 +10,6 @@
     max-width: 600px;
 }
 
-/* タブ */
 .tab-group {
     display: flex;
     border-bottom: 1px solid var(--border-color);
@@ -173,7 +172,6 @@
     z-index: 1;
 }
 
-/* レスポンシブデザイン */
 @media (max-width: 768px) {
     .action-item {
         flex-direction: column;

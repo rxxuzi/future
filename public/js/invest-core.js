@@ -176,9 +176,7 @@ function calculatePerformanceForPeriod(position, transactions, period) {
     
     // パフォーマンスを計算
     const currentPrice = position.currentPrice;
-    const performance = ((currentPrice - startPrice) / startPrice) * 100;
-    
-    return performance;
+    return ((currentPrice - startPrice) / startPrice) * 100;
 }
 
 // 取引に関連する計算
