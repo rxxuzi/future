@@ -1,0 +1,1039 @@
+:root {
+    /* ライトモード（デフォルト） */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #333333;
+    --text-secondary: #6c757d;
+    --border-color: #e0e0e0;
+    --accent-color: #1a73e8;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --info-color: #3b82f6;
+    --card-bg: #ffffff;
+    --sidebar-bg: #f8f9fa;
+    --highlight-bg: #e9ecef;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    --border-radius: 12px;
+    --btn-radius: 8px;
+}
+
+/* ダークモード */
+body.dark-mode {
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --border-color: #374151;
+    --accent-color: #818cf8;
+    --success-color: #34d399;
+    --danger-color: #f87171;
+    --warning-color: #fbbf24;
+    --info-color: #60a5fa;
+    --card-bg: #1f2937;
+    --sidebar-bg: #111827;
+    --highlight-bg: #374151;
+    --shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ===== ログインページ ===== */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--accent-color) 0%, #818cf8 100%);
+}
+
+.login-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.login-box .app-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.login-box .app-logo i {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-right: 15px;
+}
+
+.login-box h1 {
+    font-size: 2.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: var(--btn-radius);
+    margin-bottom: 20px;
+}
+
+.alert-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.form-group input, 
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--btn-radius);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-group input:focus, 
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    outline: none;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: var(--btn-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #4f46e5;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.theme-toggle {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.theme-toggle button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.theme-toggle button:hover {
+    color: var(--accent-color);
+}
+
+.theme-toggle button i {
+    margin-right: 8px;
+}
+
+/* ===== モバイルヘッダー ===== */
+.mobile-header {
+    display: none;
+    padding: 15px 20px;
+    background-color: var(--sidebar-bg);
+    border-bottom: 1px solid var(--border-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mobile-header .app-logo {
+    display: flex;
+    align-items: center;
+}
+
+.mobile-header .app-logo i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    margin-right: 10px;
+}
+
+.mobile-header h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mobile-menu-toggle,
+.mobile-theme-toggle,
+.sidebar-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.mobile-menu-toggle:hover,
+.mobile-theme-toggle:hover,
+.sidebar-close:hover {
+    background-color: var(--highlight-bg);
+    color: var(--accent-color);
+}
+
+.sidebar-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* ===== メインアプリレイアウト ===== */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* サイドバー */
+.sidebar {
+    width: 280px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+}
+
+.desktop-logo {
+    display: flex;
+}
+
+.sidebar .app-logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.sidebar .app-logo i {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    margin-right: 12px;
+}
+
+.sidebar .app-logo h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.main-nav {
+    margin-bottom: 20px;
+}
+
+.main-nav ul {
+    list-style: none;
+}
+
+.main-nav ul li {
+    margin-bottom: 8px;
+}
+
+.main-nav ul li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: var(--btn-radius);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 500;
+}
+
+.main-nav ul li a i {
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.main-nav ul li a:hover {
+    background-color: var(--highlight-bg);
+    color: var(--accent-color);
+}
+
+.main-nav ul li.active a {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.user-info {
+    margin-top: auto;
+    padding: 20px 0;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+.user-details p {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.user-details a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.user-details a:hover {
+    color: var(--accent-color);
+}
+
+/* メインコンテンツ */
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 30px;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.main-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.date-filter {
+    display: flex;
+    align-items: center;
+    background-color: var(--card-bg);
+    padding: 8px 15px;
+    border-radius: var(--btn-radius);
+    box-shadow: var(--shadow);
+}
+
+.date-filter button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 5px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.date-filter button:hover {
+    background-color: var(--highlight-bg);
+    color: var(--accent-color);
+}
+
+.date-filter span {
+    margin: 0 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.date-filter select {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    padding: 5px 10px;
+    border-radius: var(--btn-radius);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+}
+
+/* ダッシュボード */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    padding: 18px 25px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-header a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.card-header a:hover {
+    text-decoration: underline;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+/* 残高サマリー */
+.balance-summary {
+    grid-column: span 3;
+}
+
+.balance-amount {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.balance-stats {
+    display: flex;
+    justify-content: space-around;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-radius: var(--btn-radius);
+    width: 45%;
+    transition: transform 0.2s;
+}
+
+.stat:hover {
+    transform: scale(1.03);
+}
+
+.stat.income {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.stat.expense {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.stat i {
+    font-size: 1.8rem;
+    margin-right: 15px;
+}
+
+.stat.income i {
+    color: var(--success-color);
+}
+
+.stat.expense i {
+    color: var(--danger-color);
+}
+
+.stat-data {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* 資産配分 */
+.asset-allocation {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* 投資パフォーマンス */
+.investment-performance {
+    grid-column: span 2;
+}
+
+.investment-summary {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.investment-item {
+    flex-basis: calc(50% - 15px);
+    padding: 15px;
+    border-radius: var(--btn-radius);
+    background-color: var(--bg-secondary);
+    margin-bottom: 15px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.investment-item:hover {
+    transform: scale(1.03);
+}
+
+.investment-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.investment-value {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.investment-value.profit {
+    color: var(--success-color);
+}
+
+.investment-value.loss {
+    color: var(--danger-color);
+}
+
+.investment-chart-container {
+    height: 250px;
+}
+
+/* 財務目標 */
+.financial-goals {
+    grid-column: span 1;
+}
+
+.goals-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.goal-item {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.goal-item:last-child {
+    border-bottom: none;
+}
+
+.goal-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.goal-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.goal-progress-info {
+    display: flex;
+    gap: 10px;
+    font-size: 0.85rem;
+}
+
+.goal-progress-text {
+    color: var(--text-secondary);
+}
+
+.goal-progress-percentage {
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+.goal-progress-bar {
+    height: 8px;
+    width: 100%;
+    background-color: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.goal-progress-bar .progress-bar {
+    height: 100%;
+    background-color: var(--accent-color);
+    border-radius: 4px;
+}
+
+/* 残高推移グラフ */
+.balance-chart {
+    grid-column: span 2;
+}
+
+/* 支出カテゴリ */
+.expense-category {
+    grid-column: span 1;
+}
+
+/* 最近の取引 */
+.recent-transactions {
+    grid-column: span 2;
+}
+
+.transaction-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+.transaction-item:hover {
+    background-color: var(--bg-secondary);
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.transaction-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.transaction-icon.income {
+    background-color: var(--success-color);
+}
+
+.transaction-icon.expense {
+    background-color: var(--danger-color);
+}
+
+.transaction-details {
+    flex: 1;
+}
+
+.transaction-title {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.transaction-date {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.transaction-amount {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.transaction-amount.income {
+    color: var(--success-color);
+}
+
+.transaction-amount.expense {
+    color: var(--danger-color);
+}
+
+/* モーダル */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    animation: modalFadeIn 0.3s;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.close-modal:hover {
+    background-color: var(--highlight-bg);
+    color: var(--danger-color);
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+/* 取引タイプトグル */
+.transaction-type {
+    display: flex;
+    margin-bottom: 25px;
+    border-radius: var(--btn-radius);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.transaction-type-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.transaction-type-btn i {
+    margin-right: 8px;
+}
+
+.transaction-type-btn.active {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* ボタンスタイル */
+.btn-sm {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border-radius: var(--btn-radius);
+}
+
+/* 総貯蓄額セクション */
+.total-savings {
+    grid-column: span 1;
+}
+
+.savings-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--success-color);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.savings-progress {
+    margin-bottom: 20px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.progress-bar-container {
+    height: 8px;
+    width: 100%;
+    background-color: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-container .progress-bar {
+    height: 100%;
+    background-color: var(--success-color);
+    border-radius: 4px;
+}
+
+.savings-chart-container {
+    height: 200px;
+    margin-top: 20px;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1200px) {
+    .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .balance-summary {
+        grid-column: span 2;
+    }
+    
+    .asset-allocation {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+    
+    .investment-performance,
+    .balance-chart,
+    .expense-category,
+    .recent-transactions,
+    .financial-goals {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    /* モバイルヘッダーを表示 */
+    .mobile-header {
+        display: flex;
+    }
+    
+    /* サイドバーヘッダーを表示 */
+    .sidebar-header {
+        display: flex;
+    }
+    
+    /* デスクトップロゴを非表示 */
+    .desktop-logo {
+        display: none;
+    }
+    
+    /* サイドバーをオフキャンバスに */
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+        padding-top: 0;
+        z-index: 1010;
+    }
+    
+    /* サイドバーが開いている状態 */
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* メインコンテンツの調整 */
+    .main-content {
+        margin-left: 0;
+        padding: 75px 15px 15px;
+    }
+    
+    /* ダッシュボードのレイアウト */
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+    
+    .balance-summary,
+    .asset-allocation,
+    .investment-performance,
+    .balance-chart,
+    .expense-category,
+    .recent-transactions,
+    .financial-goals {
+        grid-column: span 1;
+    }
+    
+    /* 日付フィルターのレスポンシブ調整 */
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    /* スタットの調整 */
+    .balance-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .stat {
+        width: 100%;
+    }
+    
+    /* 投資サマリーの調整 */
+    .investment-item {
+        flex-basis: 100%;
+    }
+    
+    /* トランザクションアイテムのレスポンシブ調整 */
+    .transaction-item {
+        flex-wrap: wrap;
+    }
+    
+    .transaction-amount {
+        width: 100%;
+        margin-top: 10px;
+        text-align: right;
+    }
+    
+    /* モーダルのレスポンシブ調整 */
+    .modal-content {
+        width: 95%;
+    }
+}

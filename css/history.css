@@ -1,0 +1,301 @@
+/* 履歴ページスタイル */
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* フィルター部分 */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.filter-group select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--btn-radius);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.filter-group select:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+.filter-group.search {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+
+.filter-group.search input {
+    width: 100%;
+    padding: 8px 12px;
+    padding-right: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--btn-radius);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.filter-group.search input:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+.filter-group.search button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.filter-group.search button:hover {
+    color: var(--accent-color);
+}
+
+/* 取引テーブル */
+.transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transactions-table th,
+.transactions-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.transactions-table th {
+    font-weight: 500;
+    color: var(--text-secondary);
+    background-color: var(--highlight-bg);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.transactions-table tr:hover {
+    background-color: var(--bg-secondary);
+}
+
+.transactions-table td.amount {
+    font-weight: 600;
+}
+
+.transactions-table td.amount.income {
+    color: var(--success-color);
+}
+
+.transactions-table td.amount.expense {
+    color: var(--danger-color);
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-secondary {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 15px;
+    border-radius: var(--btn-radius);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: var(--border-color);
+}
+
+.btn-secondary i {
+    font-size: 0.9rem;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: var(--bg-secondary);
+    color: var(--accent-color);
+}
+
+/* ページネーション */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--btn-radius);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.pagination-btn:hover {
+    background-color: var(--bg-secondary);
+}
+
+.pagination-btn.active {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.pagination-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 編集モーダル */
+.modal-body .form-group {
+    margin-bottom: 20px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.button-group .btn {
+    flex: 1;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+.no-data {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-secondary);
+    font-style: italic;
+    background-color: var(--bg-secondary);
+    border-radius: var(--btn-radius);
+    margin: 20px 0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 992px) {
+    .filters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-group select,
+    .filter-group.search input {
+        width: 100%;
+    }
+
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .transactions-table th:nth-child(3),
+    .transactions-table td:nth-child(3) {
+        display: none;
+    }
+
+    .transactions-table th,
+    .transactions-table td {
+        padding: 10px;
+    }
+
+    .transactions-table th {
+        font-size: 0.9rem;
+    }
+
+    .pagination-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+}
+
+@media (max-width: 576px) {
+    .transactions-table th:nth-child(5),
+    .transactions-table td:nth-child(5) {
+        display: none;
+    }
+}

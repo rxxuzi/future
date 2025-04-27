@@ -1,0 +1,14 @@
+/* 基本スタイルの読み込み */
+@import 'style.css';
+
+/* 分析ページスタイルの読み込み */
+@import 'analytics.css';
+
+/* 設定ページスタイルの読み込み */
+@import 'settings.css';
+
+/* 履歴ページスタイルの読み込み */
+@import 'history.css';
+
+/* 投資ページスタイルの読み込み */
+@import 'investments.css';
