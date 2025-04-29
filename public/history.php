@@ -58,7 +58,7 @@ include_once 'includes/header.php';
         </div>
         
         <div class="filter-group search">
-            <input type="text" id="search-filter" placeholder="メモで検索...">
+            <label for="search-filter"></label><input type="text" id="search-filter" placeholder="メモで検索...">
             <button id="search-btn"><i class="fas fa-search"></i></button>
         </div>
     </div>

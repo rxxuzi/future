@@ -98,7 +98,7 @@ function addTransaction() {
             'amount' => $data['amount'],
             'category' => $data['category'],
             'date' => $data['date'],
-            'memo' => $data['memo'] ?? ''
+            'memo' => isset($data['memo']) ? $data['memo'] : ''
         ];
 
         // データベースに保存
@@ -139,7 +139,7 @@ function updateTransaction() {
             'amount' => $data['amount'],
             'category' => $data['category'],
             'date' => $data['date'],
-            'memo' => $data['memo'] ?? ''
+            'memo' => isset($data['memo']) ? $data['memo'] : ''
         ];
 
         // データベースを更新
@@ -197,5 +197,33 @@ function deleteTransaction() {
     } catch (Exception $e) {
         header('HTTP/1.1 500 Internal Server Error');
         echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+// バッチインポート関数（複数のトランザクションをまとめて保存）
+function batchImportTransactions($transactions) {
+    try {
+        $db = Database::getInstance();
+        $db->beginTransaction();
+
+        $count = 0;
+        foreach ($transactions as $transaction) {
+            $transactionData = [
+                'user_id' => $_SESSION['user_id'],
+                'amount' => $transaction['amount'],
+                'category' => $transaction['category'],
+                'date' => $transaction['date'],
+                'memo' => isset($transaction['memo']) ? $transaction['memo'] : ''
+            ];
+
+            $db->insert('transactions', $transactionData);
+            $count++;
+        }
+
+        $db->commit();
+        return $count;
+    } catch (Exception $e) {
+        $db->rollBack();
+        throw $e;
     }
 }
