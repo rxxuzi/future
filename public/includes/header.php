@@ -76,9 +76,6 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                     <li class="<?php echo $current_page === 'analytics' ? 'active' : ''; ?>">
                         <a href="analytics.php"><i class="fas fa-chart-pie"></i> 分析</a>
                     </li>
-                    <li class="<?php echo $current_page === 'investments' ? 'active' : ''; ?>">
-                        <a href="invest.php"><i class="fas fa-chart-line"></i> 投資</a>
-                    </li>
                     <li class="<?php echo $current_page === 'settings' ? 'active' : ''; ?>">
                         <a href="settings.php"><i class="fas fa-cog"></i> 設定</a>
                     </li>
