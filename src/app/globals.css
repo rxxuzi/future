@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 255 255 255;
+  --surface: 249 249 249;
+
+  --foreground: 0 0 0;
+  --foreground-secondary: 99 99 102;
+  --foreground-tertiary: 174 174 178;
+
+  --accent: 0 122 255;
+  --accent-hover: 0 108 224;
+
+  --positive: 52 199 89;
+  --negative: 255 59 48;
+
+  --border: 229 229 234;
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: 100 181 246;
+  --chart-2: 139 92 246;
+  --chart-3: 236 72 153;
+  --chart-4: 34 197 94;
+  --chart-5: 251 146 60;
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: 0 0 0;
+  --surface: 15 15 15;
+
+  --foreground: 255 255 255;
+  --foreground-secondary: 156 163 175;
+  --foreground-tertiary: 107 114 128;
+
+  --accent: 59 130 246;
+  --accent-hover: 96 165 250;
+
+  --positive: 34 197 94;
+  --negative: 239 68 68;
+
+  --border: 38 38 38;
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+
+  --chart-1: 59 130 246;
+  --chart-2: 139 92 246;
+  --chart-3: 236 72 153;
+  --chart-4: 34 197 94;
+  --chart-5: 251 146 60;
+
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+    font-feature-settings: "ss01", "ss02";
+  }
+
+  html.dark body {
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+  }
+}
+
+@layer utilities {
+  .text-display {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .text-title-1 {
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .text-title-2 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .text-title-3 {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .text-body {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .text-callout {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .text-subhead {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .text-footnote {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .text-caption {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.1);
+  }
+
+  .glow-positive {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+  }
+
+  .glow-negative {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+  }
+
+  .gradient-positive {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.02) 100%);
+  }
+
+  .gradient-negative {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.02) 100%);
+  }
+
+  .gradient-accent {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%);
+  }
+}
