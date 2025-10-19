@@ -1,277 +1,292 @@
 "use client"
 
-import {
-    TrendingUp,
-    Home,
-    Activity,
-    BarChart3,
-    Settings,
-    Search,
-    Star,
-    ArrowUpRight,
-    ArrowDownRight,
-} from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
+import { Layout } from "@/components"
+import {
+    TickerTape,
+    MarketOverview,
+    Hotlists,
+    AdvancedChart,
+    SymbolInfo,
+    TechnicalAnalysis,
+    Financials,
+    CompanyProfile,
+    SymbolSearch
+} from "@/components/tw"
 
 export default function MarketsPage() {
-    const [searchQuery, setSearchQuery] = useState("")
-    const [filter, setFilter] = useState<"all" | "crypto" | "stocks">("all")
+    const [activeView, setActiveView] = useState<"overview" | "chart" | "hotlists" | "search">("overview")
+    const [selectedSymbol, setSelectedSymbol] = useState<string>("NASDAQ:AAPL")
 
-    const navigation = [
-        { name: "Overview", icon: Home, href: "/", active: false },
-        { name: "Transactions", icon: Activity, href: "/transactions", active: false },
-        { name: "Portfolio", icon: TrendingUp, href: "/portfolio", active: false },
-        { name: "Analytics", icon: BarChart3, href: "/analytics", active: false },
-        { name: "Settings", icon: Settings, href: "/settings", active: false },
-    ]
-
-    const markets = [
-        { symbol: "BTC", name: "Bitcoin", price: 5440000, change: 2.34, change24h: 1.2, volume: "¥2.4T", type: "crypto" },
-        { symbol: "ETH", name: "Ethereum", price: 391000, change: 3.21, change24h: 2.1, volume: "¥1.2T", type: "crypto" },
-        {
-            symbol: "AAPL",
-            name: "Apple Inc.",
-            price: 21900,
-            change: -0.87,
-            change24h: -0.3,
-            volume: "¥890B",
-            type: "stocks",
-        },
-        {
-            symbol: "GOOGL",
-            name: "Alphabet Inc.",
-            price: 37980,
-            change: 1.45,
-            change24h: 0.8,
-            volume: "¥650B",
-            type: "stocks",
-        },
-        { symbol: "SOL", name: "Solana", price: 18500, change: 5.67, change24h: 3.4, volume: "¥580B", type: "crypto" },
-        {
-            symbol: "TSLA",
-            name: "Tesla Inc.",
-            price: 36950,
-            change: -2.15,
-            change24h: -1.5,
-            volume: "¥720B",
-            type: "stocks",
-        },
-        {
-            symbol: "MSFT",
-            name: "Microsoft Corp.",
-            price: 21850,
-            change: 0.92,
-            change24h: 0.4,
-            volume: "¥810B",
-            type: "stocks",
-        },
-        {
-            symbol: "BNB",
-            name: "Binance Coin",
-            price: 42300,
-            change: 1.89,
-            change24h: 1.1,
-            volume: "¥420B",
-            type: "crypto",
-        },
-    ]
-
-    const filteredMarkets = markets.filter((market) => {
-        const matchesSearch =
-            market.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            market.name.toLowerCase().includes(searchQuery.toLowerCase())
-        const matchesFilter = filter === "all" || market.type === filter
-        return matchesSearch && matchesFilter
-    })
+    const handleSymbolSelect = (symbol: string) => {
+        setSelectedSymbol(symbol)
+        setActiveView("search")
+    }
 
     return (
-        <div className="min-h-screen">
-            {/* Sidebar */}
-            <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-60 lg:flex-col border-r border-border bg-background">
-                <div className="flex flex-col h-full p-6">
-                    <div className="flex items-center gap-2.5 mb-12">
-                        <TrendingUp className="h-6 w-6 text-[rgb(var(--accent))]" strokeWidth={2.5} />
-                        <span className="text-[17px] font-semibold tracking-tight text-foreground">Future</span>
-                    </div>
+        <Layout
+            maxWidth="max-w-full"
+            padding={{
+                left: "lg:ml-60",
+                right: "",
+                top: "pt-0",
+                bottom: "pb-32 lg:pb-0"
+            }}
+        >
+            {/* TradingView Ticker Tape - 全幅 */}
+            <div className="border-b border-border">
+                <TickerTape
+                    colorTheme="dark"
+                    displayMode="adaptive"
+                />
+            </div>
 
-                    <nav className="flex-1 space-y-1">
-                        {navigation.map((item) => (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-subhead font-medium transition-colors ${
-                                    item.active
-                                        ? "bg-[rgb(var(--accent))] text-white"
-                                        : "text-[rgb(var(--foreground-secondary))] hover:bg-white/5 hover:text-foreground"
-                                }`}
-                            >
-                                <item.icon className="h-[18px] w-[18px]" strokeWidth={2} />
-                                <span>{item.name}</span>
-                            </Link>
-                        ))}
-                    </nav>
+            {/* Header + View Switcher */}
+            <div className="border-b border-border">
+                <div className="px-8 py-6">
+                    <h1 className="text-[32px] font-bold tracking-tight text-foreground mb-2">
+                        Markets
+                    </h1>
+                    <p className="text-sm text-[rgb(var(--foreground-tertiary))] mb-6">
+                        Real-time market data across all major asset classes
+                    </p>
 
-                    <div className="border-t border-border pt-6">
-                        <div className="flex items-center gap-3 px-3">
-                            <div className="h-8 w-8 rounded-full bg-[rgb(var(--accent))]/10 flex items-center justify-center flex-shrink-0 ring-1 ring-[rgb(var(--accent))]/20">
-                                <span className="text-caption font-semibold text-[rgb(var(--accent))]">JD</span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-subhead font-medium text-foreground">John Doe</p>
-                                <p className="text-caption text-[rgb(var(--foreground-tertiary))]">john@example.com</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            {/* Main */}
-            <main className="lg:ml-60 lg:pl-16 px-6 lg:pr-16 py-12 pb-32 lg:pb-16">
-                <div className="max-w-[1400px]">
-                    <div className="flex items-center justify-between mb-12">
-                        <h1 className="text-display text-foreground">Markets</h1>
-                        <div className="flex items-center gap-4">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgb(var(--foreground-tertiary))]" />
-                                <input
-                                    type="text"
-                                    placeholder="Search markets..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-10 pr-4 py-2 bg-white/5 border border-border rounded-lg text-subhead text-foreground placeholder:text-[rgb(var(--foreground-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]/50 w-64"
-                                />
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setFilter("all")}
-                                    className={`px-4 py-2 rounded-lg text-subhead font-medium transition-colors ${
-                                        filter === "all"
-                                            ? "bg-[rgb(var(--accent))] text-white"
-                                            : "bg-white/5 text-[rgb(var(--foreground-secondary))] hover:bg-white/10"
-                                    }`}
-                                >
-                                    All
-                                </button>
-                                <button
-                                    onClick={() => setFilter("crypto")}
-                                    className={`px-4 py-2 rounded-lg text-subhead font-medium transition-colors ${
-                                        filter === "crypto"
-                                            ? "bg-[rgb(var(--accent))] text-white"
-                                            : "bg-white/5 text-[rgb(var(--foreground-secondary))] hover:bg-white/10"
-                                    }`}
-                                >
-                                    Crypto
-                                </button>
-                                <button
-                                    onClick={() => setFilter("stocks")}
-                                    className={`px-4 py-2 rounded-lg text-subhead font-medium transition-colors ${
-                                        filter === "stocks"
-                                            ? "bg-[rgb(var(--accent))] text-white"
-                                            : "bg-white/5 text-[rgb(var(--foreground-secondary))] hover:bg-white/10"
-                                    }`}
-                                >
-                                    Stocks
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Markets Table */}
-                    <div className="border-t border-border">
-                        <div className="grid grid-cols-[auto_2fr_1fr_1fr_1fr_1fr] gap-4 py-4 px-4 border-b border-border/50">
-                            <div className="w-8" />
-                            <p className="text-footnote font-medium text-[rgb(var(--foreground-tertiary))] uppercase tracking-wider">
-                                Name
-                            </p>
-                            <p className="text-footnote font-medium text-[rgb(var(--foreground-tertiary))] uppercase tracking-wider text-right">
-                                Price
-                            </p>
-                            <p className="text-footnote font-medium text-[rgb(var(--foreground-tertiary))] uppercase tracking-wider text-right">
-                                24h Change
-                            </p>
-                            <p className="text-footnote font-medium text-[rgb(var(--foreground-tertiary))] uppercase tracking-wider text-right">
-                                24h %
-                            </p>
-                            <p className="text-footnote font-medium text-[rgb(var(--foreground-tertiary))] uppercase tracking-wider text-right">
-                                Volume
-                            </p>
-                        </div>
-
-                        {filteredMarkets.map((market) => (
-                            <div
-                                key={market.symbol}
-                                className="grid grid-cols-[auto_2fr_1fr_1fr_1fr_1fr] gap-4 py-5 px-4 border-b border-border/30 hover:bg-white/[0.02] transition-colors cursor-pointer"
-                            >
-                                <div className="flex items-center">
-                                    <button className="text-[rgb(var(--foreground-tertiary))] hover:text-[rgb(var(--accent))] transition-colors">
-                                        <Star className="w-4 h-4" strokeWidth={2} />
-                                    </button>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    <div>
-                                        <p className="text-callout font-semibold text-foreground">{market.symbol}</p>
-                                        <p className="text-footnote text-[rgb(var(--foreground-tertiary))]">{market.name}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-end">
-                                    <p className="text-subhead font-semibold tabular text-foreground">¥{market.price.toLocaleString()}</p>
-                                </div>
-
-                                <div className="flex items-center justify-end">
-                  <span
-                      className={`text-subhead font-semibold tabular ${
-                          market.change >= 0 ? "text-[rgb(var(--positive))]" : "text-[rgb(var(--negative))]"
-                      }`}
-                  >
-                    {market.change >= 0 ? "+" : ""}
-                      {market.change}%
-                  </span>
-                                </div>
-
-                                <div className="flex items-center justify-end">
-                  <span
-                      className={`text-subhead font-medium flex items-center gap-1 ${
-                          market.change24h >= 0 ? "text-[rgb(var(--positive))]" : "text-[rgb(var(--negative))]"
-                      }`}
-                  >
-                    {market.change24h >= 0 ? (
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                    ) : (
-                        <ArrowDownRight className="w-3.5 h-3.5" />
-                    )}
-                      {Math.abs(market.change24h)}%
-                  </span>
-                                </div>
-
-                                <div className="flex items-center justify-end">
-                                    <p className="text-subhead tabular text-[rgb(var(--foreground-secondary))]">{market.volume}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </main>
-
-            {/* Mobile Nav */}
-            <nav className="lg:hidden fixed bottom-0 inset-x-0 backdrop-blur-xl bg-background/90 border-t border-border">
-                <div className="flex items-center justify-around py-2">
-                    {navigation.slice(0, 4).map((item) => (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={`flex flex-col items-center gap-1 py-2.5 px-4 transition-colors ${
-                                item.active ? "text-[rgb(var(--accent))]" : "text-[rgb(var(--foreground-tertiary))]"
+                    {/* View Tabs */}
+                    <div className="flex gap-1 border-b border-border -mb-6">
+                        <button
+                            onClick={() => setActiveView("overview")}
+                            className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                                activeView === "overview"
+                                    ? "text-foreground border-[rgb(var(--accent))]"
+                                    : "text-[rgb(var(--foreground-secondary))] border-transparent hover:text-foreground"
                             }`}
                         >
-                            <item.icon className="w-[22px] h-[22px]" strokeWidth={2} />
-                            <span className="text-caption font-medium">{item.name}</span>
-                        </Link>
-                    ))}
+                            Market Overview
+                        </button>
+                        <button
+                            onClick={() => setActiveView("chart")}
+                            className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                                activeView === "chart"
+                                    ? "text-foreground border-[rgb(var(--accent))]"
+                                    : "text-[rgb(var(--foreground-secondary))] border-transparent hover:text-foreground"
+                            }`}
+                        >
+                            Advanced Chart
+                        </button>
+                        <button
+                            onClick={() => setActiveView("hotlists")}
+                            className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                                activeView === "hotlists"
+                                    ? "text-foreground border-[rgb(var(--accent))]"
+                                    : "text-[rgb(var(--foreground-secondary))] border-transparent hover:text-foreground"
+                            }`}
+                        >
+                            Top Movers
+                        </button>
+                        <button
+                            onClick={() => setActiveView("search")}
+                            className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                                activeView === "search"
+                                    ? "text-foreground border-[rgb(var(--accent))]"
+                                    : "text-[rgb(var(--foreground-secondary))] border-transparent hover:text-foreground"
+                            }`}
+                        >
+                            Symbol Search
+                        </button>
+                    </div>
                 </div>
-            </nav>
-        </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="px-8 py-8">
+                {/* Market Overview */}
+                {activeView === "overview" && (
+                    <div>
+                        <div className="mb-4">
+                            <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                Indices • Crypto • Forex • Commodities in one view
+                            </p>
+                        </div>
+                        <MarketOverview
+                            colorTheme="dark"
+                            dateRange="12M"
+                            showChart={true}
+                            showSymbolLogo={true}
+                            height={700}
+                        />
+                    </div>
+                )}
+
+                {/* Advanced Chart */}
+                {activeView === "chart" && (
+                    <div>
+                        <div className="mb-4">
+                            <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                Professional charting tools with technical indicators
+                            </p>
+                        </div>
+                        <div style={{ height: "calc(100vh - 350px)", minHeight: "600px" }}>
+                            <AdvancedChart
+                                symbol={selectedSymbol}
+                                theme="dark"
+                                interval="D"
+                                allowSymbolChange={true}
+                                hideSideToolbar={false}
+                                hideTopToolbar={false}
+                                autosize={true}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Top Movers */}
+                {activeView === "hotlists" && (
+                    <div>
+                        <div className="mb-4">
+                            <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                Real-time top gainers, losers and most active stocks
+                            </p>
+                        </div>
+
+                        {/* Single Hotlist - Full Width */}
+                        <Hotlists
+                            exchange="US"
+                            colorTheme="dark"
+                            dateRange="1D"
+                            showChart={true}
+                            height={700}
+                        />
+                    </div>
+                )}
+
+                {/* Symbol Search & Analysis */}
+                {activeView === "search" && (
+                    <div>
+                        <div className="mb-6">
+                            <p className="text-xs text-[rgb(var(--foreground-tertiary))] mb-4">
+                                Search symbols and view comprehensive analysis
+                            </p>
+
+                            {/* Search Bar */}
+                            <div className="flex gap-4 items-center mb-6">
+                                <div className="flex-1 max-w-md">
+                                    <SymbolSearch
+                                        onSymbolSelect={setSelectedSymbol}
+                                        theme="dark"
+                                        width="100%"
+                                        height={40}
+                                    />
+                                </div>
+                                <div className="text-sm text-[rgb(var(--foreground-secondary))]">
+                                    Current: <span className="font-mono text-[rgb(var(--accent))]">{selectedSymbol}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Symbol Analysis Dashboard */}
+                        <div className="space-y-8">
+                            {/* Row 1: Basic Info & Chart */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                {/* Symbol Info */}
+                                <div className="lg:col-span-1">
+                                    <div className="mb-4 pb-3 border-b border-border">
+                                        <h3 className="text-sm font-semibold text-foreground">Symbol Information</h3>
+                                        <p className="text-xs text-[rgb(var(--foreground-tertiary))] mt-1">
+                                            Real-time price and stats
+                                        </p>
+                                    </div>
+                                    <SymbolInfo
+                                        symbol={selectedSymbol}
+                                        colorTheme="dark"
+                                        width="100%"
+                                    />
+                                </div>
+
+                                {/* Mini Chart */}
+                                <div className="lg:col-span-2">
+                                    <div className="mb-4 pb-3 border-b border-border">
+                                        <h3 className="text-sm font-semibold text-foreground">Price Chart</h3>
+                                        <p className="text-xs text-[rgb(var(--foreground-tertiary))] mt-1">
+                                            Interactive price history
+                                        </p>
+                                    </div>
+                                    <div style={{ height: "400px" }}>
+                                        <AdvancedChart
+                                            symbol={selectedSymbol}
+                                            theme="dark"
+                                            interval="D"
+                                            allowSymbolChange={false}
+                                            hideSideToolbar={true}
+                                            hideTopToolbar={true}
+                                            autosize={true}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Row 2: Technical & Fundamental Analysis */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {/* Technical Analysis */}
+                                <div>
+                                    <div className="mb-4 pb-3 border-b border-border">
+                                        <h3 className="text-sm font-semibold text-foreground">Technical Analysis</h3>
+                                        <p className="text-xs text-[rgb(var(--foreground-tertiary))] mt-1">
+                                            Buy/Sell signals & indicators
+                                        </p>
+                                    </div>
+                                    <TechnicalAnalysis
+                                        symbol={selectedSymbol}
+                                        colorTheme="dark"
+                                        interval="1D"
+                                        width="100%"
+                                        height={450}
+                                    />
+                                </div>
+
+                                {/* Financials (for stocks) */}
+                                <div>
+                                    <div className="mb-4 pb-3 border-b border-border">
+                                        <h3 className="text-sm font-semibold text-foreground">Fundamentals</h3>
+                                        <p className="text-xs text-[rgb(var(--foreground-tertiary))] mt-1">
+                                            Financial metrics & ratios
+                                        </p>
+                                    </div>
+                                    <Financials
+                                        symbol={selectedSymbol}
+                                        colorTheme="dark"
+                                        displayMode="regular"
+                                        width="100%"
+                                        height={450}
+                                    />
+                                </div>
+
+                                {/* Company Profile */}
+                                <div>
+                                    <div className="mb-4 pb-3 border-b border-border">
+                                        <h3 className="text-sm font-semibold text-foreground">Company Profile</h3>
+                                        <p className="text-xs text-[rgb(var(--foreground-tertiary))] mt-1">
+                                            Business overview & details
+                                        </p>
+                                    </div>
+                                    <CompanyProfile
+                                        symbol={selectedSymbol}
+                                        colorTheme="dark"
+                                        width="100%"
+                                        height={450}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-8 py-6 border-t border-border">
+                <p className="text-xs text-[rgb(var(--foreground-tertiary))] font-mono">
+                    Market data provided by TradingView • Updates in real-time • API-free integration
+                </p>
+            </div>
+        </Layout>
     )
 }
