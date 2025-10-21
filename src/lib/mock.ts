@@ -73,6 +73,88 @@ export const mockPortfolio: PortfolioItem[] = [
     },
 ]
 
+// ============================================
+// Portfolio Mock Data
+// ============================================
+
+export const mockPortfolioData = [
+    {
+        asset_id: "1",
+        symbol: "BTC",
+        name: "Bitcoin",
+        asset_type: "crypto",
+        quantity: 0.5234,
+        avg_cost: 5200000,
+        current_price: 5440000,
+        current_value: 2847296,
+        unrealized_pnl: 125616,
+        unrealized_pnl_percent: 4.62
+    },
+    {
+        asset_id: "2",
+        symbol: "ETH",
+        name: "Ethereum",
+        asset_type: "crypto",
+        quantity: 3.2847,
+        avg_cost: 380000,
+        current_price: 391000,
+        current_value: 1284318,
+        unrealized_pnl: 36132,
+        unrealized_pnl_percent: 2.89
+    },
+    {
+        asset_id: "3",
+        symbol: "AAPL",
+        name: "Apple Inc.",
+        asset_type: "stock",
+        quantity: 150,
+        avg_cost: 21500,
+        current_price: 21900,
+        current_value: 3285000,
+        unrealized_pnl: 60000,
+        unrealized_pnl_percent: 1.86
+    },
+    {
+        asset_id: "4",
+        symbol: "GOOGL",
+        name: "Alphabet Inc.",
+        asset_type: "stock",
+        quantity: 75,
+        avg_cost: 37200,
+        current_price: 37980,
+        current_value: 2848500,
+        unrealized_pnl: 58500,
+        unrealized_pnl_percent: 2.10
+    }
+]
+
+export const mockAccountsData = [
+    {
+        id: "acc1",
+        name: "Investment Account",
+        type: "investment",
+        balance: 8500000,
+        institution: "SBI Securities",
+        currency: "JPY"
+    },
+    {
+        id: "acc2",
+        name: "Crypto Wallet",
+        type: "crypto",
+        balance: 4131614,
+        institution: "Binance",
+        currency: "JPY"
+    },
+    {
+        id: "acc3",
+        name: "US Stock Account",
+        type: "investment",
+        balance: 6133500,
+        institution: "Interactive Brokers",
+        currency: "JPY"
+    }
+]
+
 // バランス履歴
 export interface BalanceHistory {
     month: string
@@ -182,7 +264,7 @@ export const mockTransactions: Transaction[] = [
         id: 1,
         type: "income",
         description: "Salary Payment",
-        amount: 458320,
+        amount: 558320,
         date: "2024-06-15",
         category: "Income",
         status: "completed",
