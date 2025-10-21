@@ -1,7 +1,6 @@
 "use client"
 
-import { TrendingUp, Home, Activity, BarChart3, Settings, TrendingDown, DollarSign, PieChart } from "lucide-react"
-import Link from "next/link"
+import { TrendingUp, DollarSign, PieChart, Activity } from "lucide-react"
 import { useState } from "react"
 import {
     Line,
@@ -17,177 +16,424 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend,
     ResponsiveContainer,
 } from "recharts"
+import { Layout } from "@/components/layout/Layout"
+import {
+    mockPortfolioData,
+    mockAccountsData,
+    mockMonthlyData,
+    mockCategorySpending,
+    mockPortfolioPerformance
+} from "@/lib/mock"
 
 export default function AnalyticsPage() {
-    const [timePeriod, setTimePeriod] = useState<"week" | "month" | "year">("month")
+    const [timePeriod, setTimePeriod] = useState<"1w" | "1m" | "3m" | "6m" | "1y" | "all">("1m")
+    const [chartView, setChartView] = useState<"performance" | "allocation" | "pnl">("performance")
 
-    const navigation = [
-        { name: "Overview", icon: Home, href: "/", active: false },
-        { name: "Transactions", icon: Activity, href: "/transactions", active: false },
-        { name: "Portfolio", icon: TrendingUp, href: "/portfolio", active: false },
-        { name: "Analytics", icon: BarChart3, href: "/analytics", active: true },
-        { name: "Settings", icon: Settings, href: "/settings", active: false },
-    ]
+    // Calculate aggregated metrics
+    const totalPortfolioValue = mockPortfolioData.reduce((sum, item) => sum + item.current_value, 0)
+    const totalUnrealizedPnL = mockPortfolioData.reduce((sum, item) => sum + item.unrealized_pnl, 0)
+    const totalCostBasis = mockPortfolioData.reduce((sum, item) => sum + (item.quantity * item.avg_cost), 0)
+    const totalReturn = totalCostBasis > 0 ? ((totalUnrealizedPnL / totalCostBasis) * 100) : 0
 
-    const monthlyData = [
-        { month: "Jan", income: 420000, expense: 310000, savings: 110000 },
-        { month: "Feb", income: 445000, expense: 295000, savings: 150000 },
-        { month: "Mar", income: 438000, expense: 305000, savings: 133000 },
-        { month: "Apr", income: 465000, expense: 285000, savings: 180000 },
-        { month: "May", income: 452000, expense: 298000, savings: 154000 },
-        { month: "Jun", income: 458000, expense: 287000, savings: 171000 },
-    ]
+    const avgMonthlyIncome = mockMonthlyData.reduce((sum, m) => sum + m.income, 0) / mockMonthlyData.length
+    const avgMonthlyExpense = mockMonthlyData.reduce((sum, m) => sum + m.expense, 0) / mockMonthlyData.length
+    const avgMonthlySavings = avgMonthlyIncome - avgMonthlyExpense
+    const savingsRate = avgMonthlyIncome > 0 ? (avgMonthlySavings / avgMonthlyIncome * 100) : 0
 
-    const categorySpending = [
-        { category: "Housing", amount: 120000, percentage: 41.7 },
-        { category: "Food", amount: 65000, percentage: 22.6 },
-        { category: "Transport", amount: 45000, percentage: 15.6 },
-        { category: "Entertainment", amount: 35000, percentage: 12.2 },
-        { category: "Others", amount: 22540, percentage: 7.9 },
-    ]
+    // Best and worst performers
+    const sortedByPerformance = [...mockPortfolioData].sort((a, b) => b.unrealized_pnl_percent - a.unrealized_pnl_percent)
+    const bestPerformer = sortedByPerformance[0]
+    const worstPerformer = sortedByPerformance[sortedByPerformance.length - 1]
 
-    const portfolioPerformance = [
-        { month: "Jan", btc: 2650000, aapl: 3100000, googl: 2700000, eth: 1150000 },
-        { month: "Feb", btc: 2720000, aapl: 3180000, googl: 2750000, eth: 1200000 },
-        { month: "Mar", btc: 2680000, aapl: 3220000, googl: 2780000, eth: 1180000 },
-        { month: "Apr", btc: 2750000, aapl: 3250000, googl: 2800000, eth: 1220000 },
-        { month: "May", btc: 2800000, aapl: 3270000, googl: 2820000, eth: 1260000 },
-        { month: "Jun", btc: 2847293, aapl: 3284750, googl: 2847293, eth: 1284750 },
-    ]
+    // Asset allocation by type
+    const assetsByType = mockPortfolioData.reduce((acc, item) => {
+        const type = item.asset_type === 'crypto' ? 'Crypto' : 'Stocks'
+        if (!acc[type]) acc[type] = 0
+        acc[type] += item.current_value
+        return acc
+    }, {} as Record<string, number>)
 
-    const assetAllocation = [
-        { name: "Crypto", value: 4132043, color: "rgb(59, 130, 246)" },
-        { name: "Stocks", value: 6132043, color: "rgb(139, 92, 246)" },
-        { name: "Cash", value: 2194846, color: "rgb(34, 197, 94)" },
-    ]
+    const allocationData = Object.entries(assetsByType).map(([name, value]) => ({
+        name,
+        value,
+        color: name === 'Crypto' ? "rgb(59, 130, 246)" : "rgb(139, 92, 246)"
+    }))
+
+    // Add cash from accounts
+    const cashBalance = mockAccountsData.reduce((sum, acc) =>
+        acc.type === 'cash' ? sum + acc.balance : sum, 0
+    )
+    if (cashBalance > 0) {
+        allocationData.push({
+            name: 'Cash',
+            value: cashBalance,
+            color: "rgb(34, 197, 94)"
+        })
+    }
 
     return (
-        <div className="min-h-screen">
-            {/* Sidebar */}
-            <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-60 lg:flex-col border-r border-border bg-background">
-                <div className="flex flex-col h-full p-6">
-                    <div className="flex items-center gap-2.5 mb-12">
-                        <TrendingUp className="h-6 w-6 text-[rgb(var(--accent))]" strokeWidth={2.5} />
-                        <span className="text-[17px] font-semibold tracking-tight text-foreground">Future</span>
-                    </div>
+        <Layout
+            maxWidth="max-w-full"
+            padding={{
+                left: "lg:ml-60",
+                right: "",
+                top: "pt-0",
+                bottom: "pb-32 lg:pb-0"
+            }}
+        >
+            {/* Header */}
+            <div className="border-b border-border">
+                <div className="px-8 py-6">
+                    <h1 className="text-[32px] font-bold tracking-tight text-foreground">
+                        Analytics
+                    </h1>
+                </div>
+            </div>
 
-                    <nav className="flex-1 space-y-1">
-                        {navigation.map((item) => (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-subhead font-medium transition-colors ${
-                                    item.active
+            {/* Time Period Controls */}
+            <div className="border-b border-border">
+                <div className="px-8 py-4 flex items-center justify-between">
+                    <div className="flex gap-1">
+                        {(['1w', '1m', '3m', '6m', '1y', 'all'] as const).map((period) => (
+                            <button
+                                key={period}
+                                onClick={() => setTimePeriod(period)}
+                                className={`px-3 py-1 text-xs font-medium transition-colors ${
+                                    timePeriod === period
                                         ? "bg-[rgb(var(--accent))] text-white"
-                                        : "text-[rgb(var(--foreground-secondary))] hover:bg-white/5 hover:text-foreground"
+                                        : "bg-[rgb(var(--surface))] text-[rgb(var(--foreground-secondary))] hover:text-foreground"
                                 }`}
                             >
-                                <item.icon className="h-[18px] w-[18px]" strokeWidth={2} />
-                                <span>{item.name}</span>
-                            </Link>
+                                {period === 'all' ? 'All' : period.toUpperCase()}
+                            </button>
                         ))}
-                    </nav>
+                    </div>
 
-                    <div className="border-t border-border pt-6">
-                        <div className="flex items-center gap-3 px-3">
-                            <div className="h-8 w-8 rounded-full bg-[rgb(var(--accent))]/10 flex items-center justify-center flex-shrink-0 ring-1 ring-[rgb(var(--accent))]/20">
-                                <span className="text-caption font-semibold text-[rgb(var(--accent))]">JD</span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-subhead font-medium text-foreground">John Doe</p>
-                                <p className="text-caption text-[rgb(var(--foreground-tertiary))]">john@example.com</p>
-                            </div>
+                    <div className="text-xs text-[rgb(var(--foreground-tertiary))] font-mono">
+                        Last updated: 2 minutes ago
+                    </div>
+                </div>
+            </div>
+
+            {/* Key Metrics Grid */}
+            <div className="border-b border-border">
+                <div className="grid grid-cols-2 lg:grid-cols-4">
+                    {/* Portfolio Value */}
+                    <div className="px-8 py-6 border-r border-border">
+                        <div className="flex items-center gap-2 mb-2">
+                            <DollarSign className="w-4 h-4 text-[rgb(var(--accent))]" strokeWidth={2} />
+                            <span className="text-xs font-medium text-[rgb(var(--foreground-tertiary))]">
+                                Portfolio Value
+                            </span>
+                        </div>
+                        <p className="text-2xl font-bold tabular text-foreground mb-1">
+                            ¥{totalPortfolioValue.toLocaleString()}
+                        </p>
+                        <p className={`text-xs font-medium ${totalReturn >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                            {totalReturn >= 0 ? '+' : ''}{totalReturn.toFixed(2)}% total return
+                        </p>
+                    </div>
+
+                    {/* Unrealized P&L */}
+                    <div className="px-8 py-6 border-r border-border">
+                        <div className="flex items-center gap-2 mb-2">
+                            <TrendingUp className="w-4 h-4 text-emerald-400" strokeWidth={2} />
+                            <span className="text-xs font-medium text-[rgb(var(--foreground-tertiary))]">
+                                Unrealized P&L
+                            </span>
+                        </div>
+                        <p className={`text-2xl font-bold tabular ${totalUnrealizedPnL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                            {totalUnrealizedPnL >= 0 ? '+' : ''}¥{Math.abs(totalUnrealizedPnL).toLocaleString()}
+                        </p>
+                        <p className="text-xs font-medium text-[rgb(var(--foreground-tertiary))]">
+                            From {mockPortfolioData.length} assets
+                        </p>
+                    </div>
+
+                    {/* Monthly Income */}
+                    <div className="px-8 py-6 border-r border-border">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Activity className="w-4 h-4 text-[rgb(var(--accent))]" strokeWidth={2} />
+                            <span className="text-xs font-medium text-[rgb(var(--foreground-tertiary))]">
+                                Avg Monthly Income
+                            </span>
+                        </div>
+                        <p className="text-2xl font-bold tabular text-foreground mb-1">
+                            ¥{Math.round(avgMonthlyIncome).toLocaleString()}
+                        </p>
+                        <p className="text-xs font-medium text-emerald-400">
+                            +8.5% vs last period
+                        </p>
+                    </div>
+
+                    {/* Savings Rate */}
+                    <div className="px-8 py-6">
+                        <div className="flex items-center gap-2 mb-2">
+                            <PieChart className="w-4 h-4 text-[rgb(var(--accent))]" strokeWidth={2} />
+                            <span className="text-xs font-medium text-[rgb(var(--foreground-tertiary))]">
+                                Savings Rate
+                            </span>
+                        </div>
+                        <p className="text-2xl font-bold tabular text-foreground mb-1">
+                            {savingsRate.toFixed(1)}%
+                        </p>
+                        <p className="text-xs font-medium text-emerald-400">
+                            ¥{Math.round(avgMonthlySavings).toLocaleString()}/mo
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Performance Summary */}
+            <div className="border-b border-border">
+                <div className="grid grid-cols-2 lg:grid-cols-4">
+                    {/* Best Performer */}
+                    <div className="px-8 py-4 border-r border-border">
+                        <div className="text-xs font-medium text-[rgb(var(--foreground-tertiary))] mb-1">
+                            Best Performer
+                        </div>
+                        <div className="text-sm font-semibold text-foreground">
+                            {bestPerformer?.symbol}
+                        </div>
+                        <div className="text-xs font-medium text-emerald-400">
+                            +{bestPerformer?.unrealized_pnl_percent.toFixed(2)}%
+                        </div>
+                    </div>
+
+                    {/* Worst Performer */}
+                    <div className="px-8 py-4 border-r border-border">
+                        <div className="text-xs font-medium text-[rgb(var(--foreground-tertiary))] mb-1">
+                            Worst Performer
+                        </div>
+                        <div className="text-sm font-semibold text-foreground">
+                            {worstPerformer?.symbol}
+                        </div>
+                        <div className={`text-xs font-medium ${
+                            worstPerformer?.unrealized_pnl_percent >= 0 ? 'text-emerald-400' : 'text-red-400'
+                        }`}>
+                            {worstPerformer?.unrealized_pnl_percent >= 0 ? '+' : ''}
+                            {worstPerformer?.unrealized_pnl_percent.toFixed(2)}%
+                        </div>
+                    </div>
+
+                    {/* Total Accounts */}
+                    <div className="px-8 py-4 border-r border-border">
+                        <div className="text-xs font-medium text-[rgb(var(--foreground-tertiary))] mb-1">
+                            Active Accounts
+                        </div>
+                        <div className="text-sm font-semibold text-foreground">
+                            {mockAccountsData.length}
+                        </div>
+                        <div className="text-xs font-medium text-[rgb(var(--foreground-tertiary))]">
+                            {mockAccountsData.filter(a => a.type === 'investment').length} investment
+                        </div>
+                    </div>
+
+                    {/* Total Assets */}
+                    <div className="px-8 py-4">
+                        <div className="text-xs font-medium text-[rgb(var(--foreground-tertiary))] mb-1">
+                            Total Holdings
+                        </div>
+                        <div className="text-sm font-semibold text-foreground">
+                            {mockPortfolioData.length} assets
+                        </div>
+                        <div className="text-xs font-medium text-[rgb(var(--foreground-tertiary))]">
+                            {mockPortfolioData.filter(a => a.asset_type === 'crypto').length} crypto, {' '}
+                            {mockPortfolioData.filter(a => a.asset_type === 'stock').length} stocks
                         </div>
                     </div>
                 </div>
-            </aside>
+            </div>
 
-            {/* Main */}
-            <main className="lg:ml-60 lg:pl-16 px-6 lg:pr-16 py-12 pb-32 lg:pb-16">
-                <div className="max-w-[1400px]">
-                    <div className="flex items-center justify-between mb-12">
-                        <h1 className="text-display text-foreground">Analytics</h1>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setTimePeriod("week")}
-                                className={`px-4 py-2 rounded-lg text-subhead font-medium transition-colors ${
-                                    timePeriod === "week"
-                                        ? "bg-[rgb(var(--accent))] text-white"
-                                        : "bg-white/5 text-[rgb(var(--foreground-secondary))] hover:bg-white/10"
-                                }`}
-                            >
-                                Week
-                            </button>
-                            <button
-                                onClick={() => setTimePeriod("month")}
-                                className={`px-4 py-2 rounded-lg text-subhead font-medium transition-colors ${
-                                    timePeriod === "month"
-                                        ? "bg-[rgb(var(--accent))] text-white"
-                                        : "bg-white/5 text-[rgb(var(--foreground-secondary))] hover:bg-white/10"
-                                }`}
-                            >
-                                Month
-                            </button>
-                            <button
-                                onClick={() => setTimePeriod("year")}
-                                className={`px-4 py-2 rounded-lg text-subhead font-medium transition-colors ${
-                                    timePeriod === "year"
-                                        ? "bg-[rgb(var(--accent))] text-white"
-                                        : "bg-white/5 text-[rgb(var(--foreground-secondary))] hover:bg-white/10"
-                                }`}
-                            >
-                                Year
-                            </button>
-                        </div>
-                    </div>
+            {/* Chart Controls */}
+            <div className="border-b border-border">
+                <div className="px-8 py-4 flex gap-1">
+                    <button
+                        onClick={() => setChartView("performance")}
+                        className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-4 ${
+                            chartView === "performance"
+                                ? "text-foreground border-[rgb(var(--accent))]"
+                                : "text-[rgb(var(--foreground-secondary))] border-transparent hover:text-foreground"
+                        }`}
+                    >
+                        Performance
+                    </button>
+                    <button
+                        onClick={() => setChartView("allocation")}
+                        className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-4 ${
+                            chartView === "allocation"
+                                ? "text-foreground border-[rgb(var(--accent))]"
+                                : "text-[rgb(var(--foreground-secondary))] border-transparent hover:text-foreground"
+                        }`}
+                    >
+                        Allocation
+                    </button>
+                    <button
+                        onClick={() => setChartView("pnl")}
+                        className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-4 ${
+                            chartView === "pnl"
+                                ? "text-foreground border-[rgb(var(--accent))]"
+                                : "text-[rgb(var(--foreground-secondary))] border-transparent hover:text-foreground"
+                        }`}
+                    >
+                        Income vs Expense
+                    </button>
+                </div>
+            </div>
 
-                    {/* Key Metrics */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-                        <div>
-                            <div className="flex items-center gap-2 mb-3">
-                                <DollarSign className="w-4 h-4 text-[rgb(var(--accent))]" strokeWidth={2.5} />
-                                <span className="text-footnote text-[rgb(var(--foreground-tertiary))]">Avg Monthly Income</span>
-                            </div>
-                            <p className="text-[28px] font-bold tabular text-foreground leading-none mb-2">¥446,333</p>
-                            <p className="text-footnote font-medium text-[rgb(var(--positive))]">+8.5% vs last period</p>
-                        </div>
-
-                        <div>
-                            <div className="flex items-center gap-2 mb-3">
-                                <TrendingDown className="w-4 h-4 text-[rgb(var(--negative))]" strokeWidth={2.5} />
-                                <span className="text-footnote text-[rgb(var(--foreground-tertiary))]">Avg Monthly Expense</span>
-                            </div>
-                            <p className="text-[28px] font-bold tabular text-foreground leading-none mb-2">¥296,667</p>
-                            <p className="text-footnote font-medium text-[rgb(var(--positive))]">-3.2% vs last period</p>
-                        </div>
-
-                        <div>
-                            <div className="flex items-center gap-2 mb-3">
-                                <TrendingUp className="w-4 h-4 text-[rgb(var(--positive))]" strokeWidth={2.5} />
-                                <span className="text-footnote text-[rgb(var(--foreground-tertiary))]">Avg Monthly Savings</span>
-                            </div>
-                            <p className="text-[28px] font-bold tabular text-foreground leading-none mb-2">¥149,667</p>
-                            <p className="text-footnote font-medium text-[rgb(var(--positive))]">+15.3% vs last period</p>
-                        </div>
-
-                        <div>
-                            <div className="flex items-center gap-2 mb-3">
-                                <PieChart className="w-4 h-4 text-[rgb(var(--accent))]" strokeWidth={2.5} />
-                                <span className="text-footnote text-[rgb(var(--foreground-tertiary))]">Savings Rate</span>
-                            </div>
-                            <p className="text-[28px] font-bold tabular text-foreground leading-none mb-2">33.5%</p>
-                            <p className="text-footnote font-medium text-[rgb(var(--positive))]">+2.8% vs last period</p>
-                        </div>
-                    </div>
-
-                    {/* Income vs Expense Trend */}
-                    <div className="mb-12 pb-12 border-b border-border">
-                        <h2 className="text-title-2 mb-6 text-foreground">Income vs Expense Trend</h2>
+            {/* Main Chart Area */}
+            <div className="px-8 py-8 border-b border-border">
+                {chartView === "performance" && (
+                    <div>
+                        <h2 className="text-sm font-semibold text-foreground mb-6">
+                            Portfolio Performance
+                        </h2>
                         <ResponsiveContainer width="100%" height={320}>
-                            <AreaChart data={monthlyData}>
+                            <LineChart data={mockPortfolioPerformance}>
+                                <CartesianGrid strokeDasharray="0" stroke="rgb(var(--border))" />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="rgb(var(--foreground-tertiary))"
+                                    style={{ fontSize: 12 }}
+                                    axisLine={{ stroke: "rgb(var(--border))" }}
+                                    tickLine={false}
+                                />
+                                <YAxis
+                                    stroke="rgb(var(--foreground-tertiary))"
+                                    style={{ fontSize: 12 }}
+                                    tickFormatter={(value) => `¥${(value / 1000000).toFixed(1)}M`}
+                                    axisLine={{ stroke: "rgb(var(--border))" }}
+                                    tickLine={false}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: "rgb(var(--surface))",
+                                        border: "1px solid rgb(var(--border))",
+                                        borderRadius: "0",
+                                        color: "rgb(var(--foreground))",
+                                    }}
+                                    formatter={(value: number) => [`¥${value.toLocaleString()}`, ""]}
+                                />
+                                <Line
+                                    type="linear"
+                                    dataKey="btc"
+                                    stroke="rgb(59, 130, 246)"
+                                    strokeWidth={2}
+                                    dot={false}
+                                    name="BTC"
+                                />
+                                <Line
+                                    type="linear"
+                                    dataKey="eth"
+                                    stroke="rgb(34, 197, 94)"
+                                    strokeWidth={2}
+                                    dot={false}
+                                    name="ETH"
+                                />
+                                <Line
+                                    type="linear"
+                                    dataKey="aapl"
+                                    stroke="rgb(139, 92, 246)"
+                                    strokeWidth={2}
+                                    dot={false}
+                                    name="AAPL"
+                                />
+                                <Line
+                                    type="linear"
+                                    dataKey="googl"
+                                    stroke="rgb(236, 72, 153)"
+                                    strokeWidth={2}
+                                    dot={false}
+                                    name="GOOGL"
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                )}
+
+                {chartView === "allocation" && (
+                    <div>
+                        <h2 className="text-sm font-semibold text-foreground mb-6">
+                            Asset Allocation
+                        </h2>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* Pie Chart */}
+                            <ResponsiveContainer width="100%" height={280}>
+                                <RechartsPieChart>
+                                    <Pie
+                                        data={allocationData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={70}
+                                        outerRadius={110}
+                                        paddingAngle={0}
+                                        dataKey="value"
+                                    >
+                                        {allocationData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: "rgb(var(--surface))",
+                                            border: "1px solid rgb(var(--border))",
+                                            borderRadius: "0",
+                                            color: "rgb(var(--foreground))",
+                                        }}
+                                        formatter={(value: number) => `¥${value.toLocaleString()}`}
+                                    />
+                                </RechartsPieChart>
+                            </ResponsiveContainer>
+
+                            {/* Breakdown Table */}
+                            <div>
+                                <div className="space-y-4">
+                                    {allocationData.map((item, index) => {
+                                        const totalAllocation = allocationData.reduce((sum, i) => sum + i.value, 0)
+                                        const percentage = (item.value / totalAllocation * 100).toFixed(1)
+
+                                        return (
+                                            <div key={index} className="border-b border-border pb-4">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <div
+                                                            className="w-3 h-3"
+                                                            style={{ backgroundColor: item.color }}
+                                                        />
+                                                        <span className="text-sm font-medium text-foreground">
+                                                            {item.name}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-sm font-semibold text-foreground tabular">
+                                                        {percentage}%
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                                        Value
+                                                    </span>
+                                                    <span className="text-xs text-[rgb(var(--foreground-secondary))] tabular">
+                                                        ¥{item.value.toLocaleString()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {chartView === "pnl" && (
+                    <div>
+                        <h2 className="text-sm font-semibold text-foreground mb-6">
+                            Income vs Expense Trend
+                        </h2>
+                        <ResponsiveContainer width="100%" height={320}>
+                            <AreaChart data={mockMonthlyData}>
                                 <defs>
                                     <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="rgb(34, 197, 94)" stopOpacity={0.3} />
@@ -198,25 +444,32 @@ export default function AnalyticsPage() {
                                         <stop offset="95%" stopColor="rgb(239, 68, 68)" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                <XAxis dataKey="month" stroke="rgb(var(--foreground-tertiary))" style={{ fontSize: 12 }} />
+                                <CartesianGrid strokeDasharray="0" stroke="rgb(var(--border))" />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="rgb(var(--foreground-tertiary))"
+                                    style={{ fontSize: 12 }}
+                                    axisLine={{ stroke: "rgb(var(--border))" }}
+                                    tickLine={false}
+                                />
                                 <YAxis
                                     stroke="rgb(var(--foreground-tertiary))"
                                     style={{ fontSize: 12 }}
                                     tickFormatter={(value) => `¥${(value / 1000).toFixed(0)}k`}
+                                    axisLine={{ stroke: "rgb(var(--border))" }}
+                                    tickLine={false}
                                 />
                                 <Tooltip
                                     contentStyle={{
                                         backgroundColor: "rgb(var(--surface))",
-                                        border: "1px solid rgba(255,255,255,0.1)",
-                                        borderRadius: "8px",
+                                        border: "1px solid rgb(var(--border))",
+                                        borderRadius: "0",
                                         color: "rgb(var(--foreground))",
                                     }}
                                     formatter={(value: number) => [`¥${value.toLocaleString()}`, ""]}
                                 />
-                                <Legend />
                                 <Area
-                                    type="monotone"
+                                    type="linear"
                                     dataKey="income"
                                     stroke="rgb(34, 197, 94)"
                                     fillOpacity={1}
@@ -224,7 +477,7 @@ export default function AnalyticsPage() {
                                     strokeWidth={2}
                                 />
                                 <Area
-                                    type="monotone"
+                                    type="linear"
                                     dataKey="expense"
                                     stroke="rgb(239, 68, 68)"
                                     fillOpacity={1}
@@ -234,169 +487,172 @@ export default function AnalyticsPage() {
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
+                )}
+            </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12 pb-12 border-b border-border">
-                        {/* Category Spending */}
-                        <div>
-                            <h2 className="text-title-2 mb-6 text-foreground">Spending by Category</h2>
-                            <ResponsiveContainer width="100%" height={280}>
-                                <BarChart data={categorySpending} layout="vertical">
-                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                    <XAxis
-                                        type="number"
-                                        stroke="rgb(var(--foreground-tertiary))"
-                                        style={{ fontSize: 12 }}
-                                        tickFormatter={(value) => `¥${(value / 1000).toFixed(0)}k`}
-                                    />
-                                    <YAxis
-                                        dataKey="category"
-                                        type="category"
-                                        stroke="rgb(var(--foreground-tertiary))"
-                                        style={{ fontSize: 12 }}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: "rgb(var(--surface))",
-                                            border: "1px solid rgba(255,255,255,0.1)",
-                                            borderRadius: "8px",
-                                            color: "rgb(var(--foreground))",
-                                        }}
-                                        formatter={(value: number) => [`¥${value.toLocaleString()}`, "Amount"]}
-                                    />
-                                    <Bar dataKey="amount" fill="rgb(59, 130, 246)" radius={[0, 8, 8, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
+            {/* Category Spending Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                {/* Left: Spending by Category */}
+                <div className="px-8 py-8 border-b border-r border-border">
+                    <h2 className="text-sm font-semibold text-foreground mb-6">
+                        Spending by Category
+                    </h2>
+                    <ResponsiveContainer width="100%" height={240}>
+                        <BarChart data={mockCategorySpending} layout="vertical">
+                            <CartesianGrid strokeDasharray="0" stroke="rgb(var(--border))" />
+                            <XAxis
+                                type="number"
+                                stroke="rgb(var(--foreground-tertiary))"
+                                style={{ fontSize: 12 }}
+                                tickFormatter={(value) => `¥${(value / 1000).toFixed(0)}k`}
+                                axisLine={{ stroke: "rgb(var(--border))" }}
+                                tickLine={false}
+                            />
+                            <YAxis
+                                dataKey="category"
+                                type="category"
+                                stroke="rgb(var(--foreground-tertiary))"
+                                style={{ fontSize: 12 }}
+                                axisLine={{ stroke: "rgb(var(--border))" }}
+                                tickLine={false}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: "rgb(var(--surface))",
+                                    border: "1px solid rgb(var(--border))",
+                                    borderRadius: "0",
+                                    color: "rgb(var(--foreground))",
+                                }}
+                                formatter={(value: number) => [`¥${value.toLocaleString()}`, "Amount"]}
+                            />
+                            <Bar dataKey="amount" fill="rgb(59, 130, 246)" radius={[0, 0, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
 
-                        {/* Asset Allocation */}
-                        <div>
-                            <h2 className="text-title-2 mb-6 text-foreground">Asset Allocation</h2>
-                            <div className="flex items-center gap-8">
-                                <ResponsiveContainer width="50%" height={280}>
-                                    <RechartsPieChart>
-                                        <Pie
-                                            data={assetAllocation}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={70}
-                                            outerRadius={110}
-                                            paddingAngle={3}
-                                            dataKey="value"
-                                        >
-                                            {assetAllocation.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip
-                                            contentStyle={{
-                                                backgroundColor: "rgb(var(--surface))",
-                                                border: "1px solid rgba(255,255,255,0.1)",
-                                                borderRadius: "8px",
-                                                color: "rgb(var(--foreground))",
-                                            }}
-                                            formatter={(value: number) => `¥${value.toLocaleString()}`}
-                                        />
-                                    </RechartsPieChart>
-                                </ResponsiveContainer>
-                                <div className="flex-1 space-y-4">
-                                    {assetAllocation.map((item) => (
-                                        <div key={item.name}>
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                                                    <span className="text-subhead text-[rgb(var(--foreground-secondary))]">{item.name}</span>
-                                                </div>
-                                                <span className="text-subhead font-semibold text-foreground tabular">
-                          {((item.value / 12458932) * 100).toFixed(1)}%
-                        </span>
-                                            </div>
-                                            <p className="text-footnote text-[rgb(var(--foreground-tertiary))] tabular">
-                                                ¥{item.value.toLocaleString()}
+                {/* Right: Monthly Summary */}
+                <div className="px-8 py-8 border-b border-border">
+                    <h2 className="text-sm font-semibold text-foreground mb-6">
+                        Monthly Summary
+                    </h2>
+                    <div className="space-y-4">
+                        {mockMonthlyData.slice(-3).map((month, index) => {
+                            const savingRate = month.income > 0
+                                ? ((month.savings / month.income) * 100).toFixed(1)
+                                : "0.0"
+
+                            return (
+                                <div key={index} className="border-b border-border pb-4">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm font-semibold text-foreground">
+                                            {month.month}
+                                        </span>
+                                        <span className="text-xs font-medium text-[rgb(var(--foreground-tertiary))]">
+                                            {savingRate}% saved
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div>
+                                            <p className="text-xs text-[rgb(var(--foreground-tertiary))] mb-1">
+                                                Income
+                                            </p>
+                                            <p className="text-sm font-medium text-emerald-400 tabular">
+                                                ¥{month.income.toLocaleString()}
                                             </p>
                                         </div>
-                                    ))}
+                                        <div>
+                                            <p className="text-xs text-[rgb(var(--foreground-tertiary))] mb-1">
+                                                Expense
+                                            </p>
+                                            <p className="text-sm font-medium text-red-400 tabular">
+                                                ¥{month.expense.toLocaleString()}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-[rgb(var(--foreground-tertiary))] mb-1">
+                                                Savings
+                                            </p>
+                                            <p className="text-sm font-medium text-foreground tabular">
+                                                ¥{month.savings.toLocaleString()}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            {/* Asset Performance Table */}
+            <div className="px-8 py-8">
+                <h2 className="text-sm font-semibold text-foreground mb-6">
+                    Asset Performance Details
+                </h2>
+
+                {/* Table Header */}
+                <div className="grid grid-cols-[120px_1fr_100px_120px_120px_120px_100px] gap-4 py-3 border-b border-border">
+                    <div className="text-xs font-semibold text-[rgb(var(--foreground-tertiary))]">
+                        Symbol
+                    </div>
+                    <div className="text-xs font-semibold text-[rgb(var(--foreground-tertiary))]">
+                        Name
+                    </div>
+                    <div className="text-xs font-semibold text-[rgb(var(--foreground-tertiary))] text-right">
+                        Quantity
+                    </div>
+                    <div className="text-xs font-semibold text-[rgb(var(--foreground-tertiary))] text-right">
+                        Avg Cost
+                    </div>
+                    <div className="text-xs font-semibold text-[rgb(var(--foreground-tertiary))] text-right">
+                        Current
+                    </div>
+                    <div className="text-xs font-semibold text-[rgb(var(--foreground-tertiary))] text-right">
+                        Value
+                    </div>
+                    <div className="text-xs font-semibold text-[rgb(var(--foreground-tertiary))] text-right">
+                        P&L %
+                    </div>
+                </div>
+
+                {/* Table Body */}
+                {mockPortfolioData.map((item, index) => (
+                    <div
+                        key={item.asset_id}
+                        className="grid grid-cols-[120px_1fr_100px_120px_120px_120px_100px] gap-4 py-3 border-b border-border"
+                    >
+                        <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 ${
+                                item.asset_type === 'crypto' ? 'bg-[rgb(var(--accent))]' : 'bg-[rgb(var(--chart-2))]'
+                            }`} />
+                            <span className="text-sm font-semibold text-foreground font-mono">
+                                {item.symbol}
+                            </span>
+                        </div>
+                        <div className="text-sm text-[rgb(var(--foreground-secondary))]">
+                            {item.name}
+                        </div>
+                        <div className="text-sm text-[rgb(var(--foreground-secondary))] text-right tabular">
+                            {item.quantity}
+                        </div>
+                        <div className="text-sm text-[rgb(var(--foreground-secondary))] text-right tabular">
+                            ¥{item.avg_cost.toLocaleString()}
+                        </div>
+                        <div className="text-sm font-medium text-foreground text-right tabular">
+                            ¥{item.current_price.toLocaleString()}
+                        </div>
+                        <div className="text-sm font-semibold text-foreground text-right tabular">
+                            ¥{item.current_value.toLocaleString()}
+                        </div>
+                        <div className={`text-sm font-semibold text-right tabular ${
+                            item.unrealized_pnl_percent >= 0 ? 'text-emerald-400' : 'text-red-400'
+                        }`}>
+                            {item.unrealized_pnl_percent >= 0 ? '+' : ''}
+                            {item.unrealized_pnl_percent.toFixed(2)}%
                         </div>
                     </div>
-
-                    {/* Portfolio Performance */}
-                    <div>
-                        <h2 className="text-title-2 mb-6 text-foreground">Portfolio Performance</h2>
-                        <ResponsiveContainer width="100%" height={320}>
-                            <LineChart data={portfolioPerformance}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                <XAxis dataKey="month" stroke="rgb(var(--foreground-tertiary))" style={{ fontSize: 12 }} />
-                                <YAxis
-                                    stroke="rgb(var(--foreground-tertiary))"
-                                    style={{ fontSize: 12 }}
-                                    tickFormatter={(value) => `¥${(value / 1000000).toFixed(1)}M`}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: "rgb(var(--surface))",
-                                        border: "1px solid rgba(255,255,255,0.1)",
-                                        borderRadius: "8px",
-                                        color: "rgb(var(--foreground))",
-                                    }}
-                                    formatter={(value: number) => [`¥${value.toLocaleString()}`, ""]}
-                                />
-                                <Legend />
-                                <Line
-                                    type="monotone"
-                                    dataKey="btc"
-                                    stroke="rgb(59, 130, 246)"
-                                    strokeWidth={2}
-                                    dot={{ r: 4 }}
-                                    name="BTC"
-                                />
-                                <Line
-                                    type="monotone"
-                                    dataKey="aapl"
-                                    stroke="rgb(139, 92, 246)"
-                                    strokeWidth={2}
-                                    dot={{ r: 4 }}
-                                    name="AAPL"
-                                />
-                                <Line
-                                    type="monotone"
-                                    dataKey="googl"
-                                    stroke="rgb(236, 72, 153)"
-                                    strokeWidth={2}
-                                    dot={{ r: 4 }}
-                                    name="GOOGL"
-                                />
-                                <Line
-                                    type="monotone"
-                                    dataKey="eth"
-                                    stroke="rgb(34, 197, 94)"
-                                    strokeWidth={2}
-                                    dot={{ r: 4 }}
-                                    name="ETH"
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </main>
-
-            {/* Mobile Nav */}
-            <nav className="lg:hidden fixed bottom-0 inset-x-0 backdrop-blur-xl bg-background/90 border-t border-border">
-                <div className="flex items-center justify-around py-2">
-                    {navigation.slice(0, 4).map((item) => (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={`flex flex-col items-center gap-1 py-2.5 px-4 transition-colors ${
-                                item.active ? "text-[rgb(var(--accent))]" : "text-[rgb(var(--foreground-tertiary))]"
-                            }`}
-                        >
-                            <item.icon className="w-[22px] h-[22px]" strokeWidth={2} />
-                            <span className="text-caption font-medium">{item.name}</span>
-                        </Link>
-                    ))}
-                </div>
-            </nav>
-        </div>
+                ))}
+            </div>
+        </Layout>
     )
 }

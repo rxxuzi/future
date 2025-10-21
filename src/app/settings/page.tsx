@@ -1,283 +1,435 @@
 "use client"
 
-import { TrendingUp, Home, Activity, BarChart3, Settings, Moon, Sun, Bell, User, Shield } from "lucide-react"
-import Link from "next/link"
-import { useState, useEffect } from "react"
+import {
+    Settings,
+    User,
+    Bell,
+    Shield,
+    CreditCard,
+    Database,
+    Globe,
+    Moon,
+    Sun,
+    Key,
+    Mail,
+    Smartphone,
+    AlertTriangle
+} from "lucide-react"
+import { useState } from "react"
+import { Layout } from "@/components/layout/Layout"
 
 export default function SettingsPage() {
+    const [activeSection, setActiveSection] = useState<string>("profile")
     const [theme, setTheme] = useState<"light" | "dark">("dark")
-    const [notifications, setNotifications] = useState(true)
+    const [emailNotifications, setEmailNotifications] = useState(true)
+    const [pushNotifications, setPushNotifications] = useState(true)
+    const [marketAlerts, setMarketAlerts] = useState(false)
     const [twoFactor, setTwoFactor] = useState(false)
+    const [apiAccess, setApiAccess] = useState(false)
 
-    const navigation = [
-        { name: "Overview", icon: Home, href: "/", active: false },
-        { name: "Transactions", icon: Activity, href: "/transactions", active: false },
-        { name: "Portfolio", icon: TrendingUp, href: "/portfolio", active: false },
-        { name: "Analytics", icon: BarChart3, href: "/analytics", active: false },
-        { name: "Settings", icon: Settings, href: "/settings", active: true },
+    const sections = [
+        { id: "profile", name: "Profile", icon: User },
+        { id: "appearance", name: "Appearance", icon: Moon },
+        { id: "notifications", name: "Notifications", icon: Bell },
+        { id: "security", name: "Security", icon: Shield },
+        { id: "billing", name: "Billing", icon: CreditCard },
+        { id: "data", name: "Data & Privacy", icon: Database },
+        { id: "language", name: "Language & Region", icon: Globe },
     ]
 
-    useEffect(() => {
-        const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null
-        if (savedTheme) {
-            setTheme(savedTheme)
-            document.documentElement.classList.toggle("dark", savedTheme === "dark")
-        }
-    }, [])
-
-    const handleThemeChange = (newTheme: "light" | "dark") => {
-        setTheme(newTheme)
-        localStorage.setItem("theme", newTheme)
-        document.documentElement.classList.toggle("dark", newTheme === "dark")
-    }
-
     return (
-        <div className="min-h-screen">
-            {/* Sidebar */}
-            <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-60 lg:flex-col border-r border-border bg-background">
-                <div className="flex flex-col h-full p-6">
-                    <div className="flex items-center gap-2.5 mb-12">
-                        <TrendingUp className="h-6 w-6 text-[rgb(var(--accent))]" strokeWidth={2.5} />
-                        <span className="text-[17px] font-semibold tracking-tight text-foreground">Future</span>
-                    </div>
+        <Layout
+            maxWidth="max-w-full"
+            padding={{
+                left: "lg:ml-60",
+                right: "",
+                top: "pt-0",
+                bottom: "pb-32 lg:pb-0"
+            }}
+        >
+            {/* Header */}
+            <div className="border-b border-border">
+                <div className="px-8 py-6">
+                    <h1 className="text-[32px] font-bold tracking-tight text-foreground">
+                        Settings
+                    </h1>
+                </div>
+            </div>
 
-                    <nav className="flex-1 space-y-1">
-                        {navigation.map((item) => (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-subhead font-medium transition-colors ${
-                                    item.active
-                                        ? "bg-[rgb(var(--accent))] text-white"
-                                        : "text-[rgb(var(--foreground-secondary))] hover:bg-white/5 hover:text-foreground"
+            {/* Settings Navigation */}
+            <div className="border-b border-border">
+                <div className="px-8 py-0 flex gap-1 overflow-x-auto">
+                    {sections.map((section) => {
+                        const Icon = section.icon
+                        return (
+                            <button
+                                key={section.id}
+                                onClick={() => setActiveSection(section.id)}
+                                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                                    activeSection === section.id
+                                        ? "text-foreground border-[rgb(var(--accent))]"
+                                        : "text-[rgb(var(--foreground-secondary))] border-transparent hover:text-foreground"
                                 }`}
                             >
-                                <item.icon className="h-[18px] w-[18px]" strokeWidth={2} />
-                                <span>{item.name}</span>
-                            </Link>
-                        ))}
-                    </nav>
-
-                    <div className="border-t border-border pt-6">
-                        <div className="flex items-center gap-3 px-3">
-                            <div className="h-8 w-8 rounded-full bg-[rgb(var(--accent))]/10 flex items-center justify-center flex-shrink-0 ring-1 ring-[rgb(var(--accent))]/20">
-                                <span className="text-caption font-semibold text-[rgb(var(--accent))]">JD</span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-subhead font-medium text-foreground">John Doe</p>
-                                <p className="text-caption text-[rgb(var(--foreground-tertiary))]">john@example.com</p>
-                            </div>
-                        </div>
-                    </div>
+                                <Icon className="w-4 h-4" strokeWidth={2} />
+                                {section.name}
+                            </button>
+                        )
+                    })}
                 </div>
-            </aside>
+            </div>
 
-            {/* Main */}
-            <main className="lg:ml-60 lg:pl-16 px-6 lg:pr-16 py-12 pb-32 lg:pb-16">
-                <div className="max-w-[900px]">
-                    <h1 className="text-display mb-12 text-foreground">Settings</h1>
+            {/* Settings Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-3">
+                {/* Main Content Area */}
+                <div className="lg:col-span-2 border-r border-border">
+                    {/* Profile Section */}
+                    {activeSection === "profile" && (
+                        <>
+                            {/* Personal Information */}
+                            <div className="px-8 py-6 border-b border-border">
+                                <div className="mb-6">
+                                    <h2 className="text-sm font-semibold text-foreground mb-1">
+                                        Personal Information
+                                    </h2>
+                                    <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                        Update your account details
+                                    </p>
+                                </div>
 
-                    <div className="space-y-6">
-                        {/* Appearance */}
-                        <div className="glass-card rounded-2xl overflow-hidden">
-                            <div className="p-8 border-b border-white/5">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-[rgb(var(--accent))]/10 flex items-center justify-center ring-1 ring-[rgb(var(--accent))]/20">
-                                        {theme === "dark" ? (
-                                            <Moon className="w-6 h-6 text-[rgb(var(--accent))]" strokeWidth={2} />
-                                        ) : (
-                                            <Sun className="w-6 h-6 text-[rgb(var(--accent))]" strokeWidth={2} />
-                                        )}
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-medium text-[rgb(var(--foreground-tertiary))] mb-2">
+                                                First Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                defaultValue="John"
+                                                className="w-full h-9 px-4 bg-[rgb(var(--surface))] border border-border text-sm text-foreground placeholder:text-[rgb(var(--foreground-tertiary))] focus:outline-none focus:border-[rgb(var(--accent))]"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-[rgb(var(--foreground-tertiary))] mb-2">
+                                                Last Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                defaultValue="Doe"
+                                                className="w-full h-9 px-4 bg-[rgb(var(--surface))] border border-border text-sm text-foreground placeholder:text-[rgb(var(--foreground-tertiary))] focus:outline-none focus:border-[rgb(var(--accent))]"
+                                            />
+                                        </div>
                                     </div>
+
                                     <div>
-                                        <h2 className="text-title-3 text-foreground mb-1">Appearance</h2>
-                                        <p className="text-footnote text-[rgb(var(--foreground-tertiary))]">
-                                            Customize how Future looks on your device
-                                        </p>
+                                        <label className="block text-xs font-medium text-[rgb(var(--foreground-tertiary))] mb-2">
+                                            Email Address
+                                        </label>
+                                        <input
+                                            type="email"
+                                            defaultValue="john@example.com"
+                                            className="w-full h-9 px-4 bg-[rgb(var(--surface))] border border-border text-sm text-foreground placeholder:text-[rgb(var(--foreground-tertiary))] focus:outline-none focus:border-[rgb(var(--accent))]"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-medium text-[rgb(var(--foreground-tertiary))] mb-2">
+                                            Phone Number
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            defaultValue="+81 90 1234 5678"
+                                            className="w-full h-9 px-4 bg-[rgb(var(--surface))] border border-border text-sm text-foreground placeholder:text-[rgb(var(--foreground-tertiary))] focus:outline-none focus:border-[rgb(var(--accent))]"
+                                        />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="p-8">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-subhead font-medium text-foreground mb-1">Theme</p>
-                                        <p className="text-footnote text-[rgb(var(--foreground-tertiary))]">Select your preferred theme</p>
-                                    </div>
-                                    <div className="flex gap-3">
-                                        <button
-                                            onClick={() => handleThemeChange("light")}
-                                            className={`px-5 py-2.5 rounded-xl text-subhead font-medium transition-all flex items-center gap-2.5 ${
-                                                theme === "light"
-                                                    ? "bg-[rgb(var(--accent))] text-white shadow-lg shadow-[rgb(var(--accent))]/20"
-                                                    : "bg-white/5 text-[rgb(var(--foreground-secondary))] hover:bg-white/10 border border-white/10"
-                                            }`}
-                                        >
-                                            <Sun className="w-4 h-4" strokeWidth={2.5} />
-                                            Light
-                                        </button>
-                                        <button
-                                            onClick={() => handleThemeChange("dark")}
-                                            className={`px-5 py-2.5 rounded-xl text-subhead font-medium transition-all flex items-center gap-2.5 ${
-                                                theme === "dark"
-                                                    ? "bg-[rgb(var(--accent))] text-white shadow-lg shadow-[rgb(var(--accent))]/20"
-                                                    : "bg-white/5 text-[rgb(var(--foreground-secondary))] hover:bg-white/10 border border-white/10"
-                                            }`}
-                                        >
-                                            <Moon className="w-4 h-4" strokeWidth={2.5} />
-                                            Dark
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Profile */}
-                        <div className="glass-card rounded-2xl overflow-hidden">
-                            <div className="p-8 border-b border-white/5">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-[rgb(var(--accent))]/10 flex items-center justify-center ring-1 ring-[rgb(var(--accent))]/20">
-                                        <User className="w-6 h-6 text-[rgb(var(--accent))]" strokeWidth={2} />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-title-3 text-foreground mb-1">Profile</h2>
-                                        <p className="text-footnote text-[rgb(var(--foreground-tertiary))]">
-                                            Manage your account information
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="p-8 space-y-6">
-                                <div>
-                                    <label className="block text-footnote font-medium text-[rgb(var(--foreground-secondary))] mb-3">
-                                        Full Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        defaultValue="John Doe"
-                                        className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-foreground placeholder:text-[rgb(var(--foreground-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]/50 focus:border-[rgb(var(--accent))]/50 transition-all"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-footnote font-medium text-[rgb(var(--foreground-secondary))] mb-3">
-                                        Email Address
-                                    </label>
-                                    <input
-                                        type="email"
-                                        defaultValue="john@example.com"
-                                        className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-foreground placeholder:text-[rgb(var(--foreground-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]/50 focus:border-[rgb(var(--accent))]/50 transition-all"
-                                    />
-                                </div>
-                                <button className="px-6 py-3 bg-[rgb(var(--accent))] text-white rounded-xl text-subhead font-medium hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-lg shadow-[rgb(var(--accent))]/20">
+                            {/* Save Button */}
+                            <div className="px-8 py-4 border-b border-border">
+                                <button className="px-4 h-9 bg-[rgb(var(--accent))] hover:bg-[rgb(var(--accent-hover))] text-white text-sm font-medium">
                                     Save Changes
                                 </button>
                             </div>
-                        </div>
+                        </>
+                    )}
 
-                        {/* Notifications */}
-                        <div className="glass-card rounded-2xl overflow-hidden">
-                            <div className="p-8 border-b border-white/5">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-[rgb(var(--accent))]/10 flex items-center justify-center ring-1 ring-[rgb(var(--accent))]/20">
-                                        <Bell className="w-6 h-6 text-[rgb(var(--accent))]" strokeWidth={2} />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-title-3 text-foreground mb-1">Notifications</h2>
-                                        <p className="text-footnote text-[rgb(var(--foreground-tertiary))]">
-                                            Manage your notification preferences
-                                        </p>
-                                    </div>
+                    {/* Appearance Section */}
+                    {activeSection === "appearance" && (
+                        <>
+                            {/* Theme Selection */}
+                            <div className="px-8 py-6 border-b border-border">
+                                <div className="mb-6">
+                                    <h2 className="text-sm font-semibold text-foreground mb-1">
+                                        Theme
+                                    </h2>
+                                    <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                        Select your preferred color scheme
+                                    </p>
                                 </div>
-                            </div>
 
-                            <div className="p-8">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-subhead font-medium text-foreground mb-1">Push Notifications</p>
-                                        <p className="text-footnote text-[rgb(var(--foreground-tertiary))]">
-                                            Receive notifications about your account activity
-                                        </p>
-                                    </div>
+                                <div className="grid grid-cols-2 gap-4">
                                     <button
-                                        onClick={() => setNotifications(!notifications)}
-                                        className={`relative w-14 h-7 rounded-full transition-colors ${
-                                            notifications ? "bg-[rgb(var(--accent))]" : "bg-white/10"
+                                        onClick={() => setTheme("light")}
+                                        className={`h-24 border-2 flex flex-col items-center justify-center gap-2 transition-colors ${
+                                            theme === "light"
+                                                ? "border-[rgb(var(--accent))] bg-[rgb(var(--accent))]/10"
+                                                : "border-border hover:border-[rgb(var(--foreground-tertiary))]"
                                         }`}
                                     >
-                    <span
-                        className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform shadow-lg ${
-                            notifications ? "translate-x-7" : "translate-x-0"
-                        }`}
-                    />
+                                        <Sun className="w-6 h-6" strokeWidth={2} />
+                                        <span className="text-sm font-medium">Light</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setTheme("dark")}
+                                        className={`h-24 border-2 flex flex-col items-center justify-center gap-2 transition-colors ${
+                                            theme === "dark"
+                                                ? "border-[rgb(var(--accent))] bg-[rgb(var(--accent))]/10"
+                                                : "border-border hover:border-[rgb(var(--foreground-tertiary))]"
+                                        }`}
+                                    >
+                                        <Moon className="w-6 h-6" strokeWidth={2} />
+                                        <span className="text-sm font-medium">Dark</span>
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </>
+                    )}
 
-                        {/* Security */}
-                        <div className="glass-card rounded-2xl overflow-hidden">
-                            <div className="p-8 border-b border-white/5">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-[rgb(var(--accent))]/10 flex items-center justify-center ring-1 ring-[rgb(var(--accent))]/20">
-                                        <Shield className="w-6 h-6 text-[rgb(var(--accent))]" strokeWidth={2} />
+                    {/* Notifications Section */}
+                    {activeSection === "notifications" && (
+                        <>
+                            {/* Email Notifications */}
+                            <div className="px-8 py-6 border-b border-border">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <Mail className="w-4 h-4 text-[rgb(var(--foreground-tertiary))]" strokeWidth={2} />
+                                        <div>
+                                            <p className="text-sm font-medium text-foreground">
+                                                Email Notifications
+                                            </p>
+                                            <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                                Receive updates via email
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h2 className="text-title-3 text-foreground mb-1">Security</h2>
-                                        <p className="text-footnote text-[rgb(var(--foreground-tertiary))]">
-                                            Manage your security settings
-                                        </p>
-                                    </div>
+                                    <button
+                                        onClick={() => setEmailNotifications(!emailNotifications)}
+                                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                                            emailNotifications ? "bg-[rgb(var(--accent))]" : "bg-[rgb(var(--foreground-tertiary))]"
+                                        }`}
+                                    >
+                                        <span
+                                            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                                                emailNotifications ? "translate-x-6" : "translate-x-0"
+                                            }`}
+                                        />
+                                    </button>
                                 </div>
                             </div>
 
-                            <div className="p-8 space-y-6">
-                                <div className="flex items-center justify-between pb-6 border-b border-white/5">
-                                    <div>
-                                        <p className="text-subhead font-medium text-foreground mb-1">Two-Factor Authentication</p>
-                                        <p className="text-footnote text-[rgb(var(--foreground-tertiary))]">
-                                            Add an extra layer of security to your account
-                                        </p>
+                            {/* Push Notifications */}
+                            <div className="px-8 py-6 border-b border-border">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <Smartphone className="w-4 h-4 text-[rgb(var(--foreground-tertiary))]" strokeWidth={2} />
+                                        <div>
+                                            <p className="text-sm font-medium text-foreground">
+                                                Push Notifications
+                                            </p>
+                                            <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                                Receive mobile push notifications
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setPushNotifications(!pushNotifications)}
+                                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                                            pushNotifications ? "bg-[rgb(var(--accent))]" : "bg-[rgb(var(--foreground-tertiary))]"
+                                        }`}
+                                    >
+                                        <span
+                                            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                                                pushNotifications ? "translate-x-6" : "translate-x-0"
+                                            }`}
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Market Alerts */}
+                            <div className="px-8 py-6 border-b border-border">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <AlertTriangle className="w-4 h-4 text-[rgb(var(--foreground-tertiary))]" strokeWidth={2} />
+                                        <div>
+                                            <p className="text-sm font-medium text-foreground">
+                                                Market Alerts
+                                            </p>
+                                            <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                                Get notified about significant market movements
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setMarketAlerts(!marketAlerts)}
+                                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                                            marketAlerts ? "bg-[rgb(var(--accent))]" : "bg-[rgb(var(--foreground-tertiary))]"
+                                        }`}
+                                    >
+                                        <span
+                                            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                                                marketAlerts ? "translate-x-6" : "translate-x-0"
+                                            }`}
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Security Section */}
+                    {activeSection === "security" && (
+                        <>
+                            {/* Two-Factor Authentication */}
+                            <div className="px-8 py-6 border-b border-border">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <Shield className="w-4 h-4 text-[rgb(var(--foreground-tertiary))]" strokeWidth={2} />
+                                        <div>
+                                            <p className="text-sm font-medium text-foreground">
+                                                Two-Factor Authentication
+                                            </p>
+                                            <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                                Add an extra layer of security to your account
+                                            </p>
+                                        </div>
                                     </div>
                                     <button
                                         onClick={() => setTwoFactor(!twoFactor)}
-                                        className={`relative w-14 h-7 rounded-full transition-colors ${
-                                            twoFactor ? "bg-[rgb(var(--accent))]" : "bg-white/10"
+                                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                                            twoFactor ? "bg-[rgb(var(--accent))]" : "bg-[rgb(var(--foreground-tertiary))]"
                                         }`}
                                     >
-                    <span
-                        className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform shadow-lg ${
-                            twoFactor ? "translate-x-7" : "translate-x-0"
-                        }`}
-                    />
+                                        <span
+                                            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                                                twoFactor ? "translate-x-6" : "translate-x-0"
+                                            }`}
+                                        />
                                     </button>
                                 </div>
-                                <button className="w-full px-6 py-3.5 bg-white/5 border border-white/10 text-foreground rounded-xl text-subhead font-medium hover:bg-white/10 hover:border-white/20 transition-all">
-                                    Change Password
-                                </button>
+                            </div>
+
+                            {/* Change Password */}
+                            <div className="px-8 py-6 border-b border-border">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <Key className="w-4 h-4 text-[rgb(var(--foreground-tertiary))]" strokeWidth={2} />
+                                        <div>
+                                            <p className="text-sm font-medium text-foreground">
+                                                Password
+                                            </p>
+                                            <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                                Last changed 30 days ago
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button className="px-4 h-8 border border-border hover:bg-[rgb(var(--surface))] text-sm font-medium">
+                                        Change Password
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* API Access */}
+                            <div className="px-8 py-6 border-b border-border">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <Database className="w-4 h-4 text-[rgb(var(--foreground-tertiary))]" strokeWidth={2} />
+                                        <div>
+                                            <p className="text-sm font-medium text-foreground">
+                                                API Access
+                                            </p>
+                                            <p className="text-xs text-[rgb(var(--foreground-tertiary))]">
+                                                Enable programmatic access to your data
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setApiAccess(!apiAccess)}
+                                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                                            apiAccess ? "bg-[rgb(var(--accent))]" : "bg-[rgb(var(--foreground-tertiary))]"
+                                        }`}
+                                    >
+                                        <span
+                                            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                                                apiAccess ? "translate-x-6" : "translate-x-0"
+                                            }`}
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Other sections can be similarly implemented */}
+                </div>
+
+                {/* Side Panel - Activity/Status */}
+                <div className="lg:col-span-1">
+                    {/* Account Status */}
+                    <div className="px-8 py-6 border-b border-border">
+                        <h3 className="text-xs font-semibold text-[rgb(var(--foreground-tertiary))] mb-4">
+                            Account Status
+                        </h3>
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-[rgb(var(--foreground-secondary))]">Plan</span>
+                                <span className="text-sm font-medium text-foreground">Free</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-[rgb(var(--foreground-secondary))]">Member Since</span>
+                                <span className="text-sm font-medium text-foreground font-mono">2024-01-15</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-[rgb(var(--foreground-secondary))]">Storage Used</span>
+                                <span className="text-sm font-medium text-foreground">2.3 GB / 10 GB</span>
                             </div>
                         </div>
                     </div>
-                </div>
-            </main>
 
-            {/* Mobile Nav */}
-            <nav className="lg:hidden fixed bottom-0 inset-x-0 backdrop-blur-xl bg-background/90 border-t border-border">
-                <div className="flex items-center justify-around py-2">
-                    {navigation.slice(0, 4).map((item) => (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={`flex flex-col items-center gap-1 py-2.5 px-4 transition-colors ${
-                                item.active ? "text-[rgb(var(--accent))]" : "text-[rgb(var(--foreground-tertiary))]"
-                            }`}
-                        >
-                            <item.icon className="w-[22px] h-[22px]" strokeWidth={2} />
-                            <span className="text-caption font-medium">{item.name}</span>
-                        </Link>
-                    ))}
+                    {/* Recent Activity */}
+                    <div className="px-8 py-6 border-b border-border">
+                        <h3 className="text-xs font-semibold text-[rgb(var(--foreground-tertiary))] mb-4">
+                            Recent Activity
+                        </h3>
+                        <div className="space-y-3">
+                            <div className="text-sm">
+                                <p className="text-[rgb(var(--foreground-secondary))]">Password changed</p>
+                                <p className="text-xs text-[rgb(var(--foreground-tertiary))] font-mono">30 days ago</p>
+                            </div>
+                            <div className="text-sm">
+                                <p className="text-[rgb(var(--foreground-secondary))]">Email verified</p>
+                                <p className="text-xs text-[rgb(var(--foreground-tertiary))] font-mono">45 days ago</p>
+                            </div>
+                            <div className="text-sm">
+                                <p className="text-[rgb(var(--foreground-secondary))]">Account created</p>
+                                <p className="text-xs text-[rgb(var(--foreground-tertiary))] font-mono">2024-01-15</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Danger Zone */}
+                    <div className="px-8 py-6">
+                        <h3 className="text-xs font-semibold text-red-400 mb-4">
+                            Danger Zone
+                        </h3>
+                        <button className="w-full px-4 h-9 border border-red-400 text-red-400 hover:bg-red-400/10 text-sm font-medium">
+                            Delete Account
+                        </button>
+                    </div>
                 </div>
-            </nav>
-        </div>
+            </div>
+
+        </Layout>
     )
 }

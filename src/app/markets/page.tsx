@@ -47,9 +47,6 @@ export default function MarketsPage() {
                     <h1 className="text-[32px] font-bold tracking-tight text-foreground mb-2">
                         Markets
                     </h1>
-                    <p className="text-sm text-[rgb(var(--foreground-tertiary))] mb-6">
-                        Real-time market data across all major asset classes
-                    </p>
 
                     {/* View Tabs */}
                     <div className="flex gap-1 border-b border-border -mb-6">
@@ -284,7 +281,7 @@ export default function MarketsPage() {
             {/* Footer */}
             <div className="px-8 py-6 border-t border-border">
                 <p className="text-xs text-[rgb(var(--foreground-tertiary))] font-mono">
-                    Market data provided by TradingView • Updates in real-time • API-free integration
+                    Market data provided by TradingView
                 </p>
             </div>
         </Layout>

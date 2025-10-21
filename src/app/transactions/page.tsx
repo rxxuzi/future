@@ -68,9 +68,6 @@ export default function TransactionsPage() {
                     <h1 className="text-[32px] font-bold tracking-tight text-foreground mb-2">
                         Transactions
                     </h1>
-                    <p className="text-sm text-[rgb(var(--foreground-tertiary))]">
-                        Track all your income and expenses
-                    </p>
                 </div>
             </div>
 
